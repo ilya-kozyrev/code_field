@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'themes.dart';
 import 'autoRefactorService.dart';
 import 'package:flutter/material.dart';
 import 'code_text_field.dart';
 import 'package:highlight/languages/all.dart';
+import 'blocksSettings.dart' as blocksSettings;
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
@@ -125,36 +128,70 @@ class InnerField extends StatefulWidget {
 }
 
 class _InnerFieldState extends State<InnerField> {
-  CodeController? _codeController;
+  List<CodeController?> _codeControllers = [];
+  List<int> sumStrBeforeBlock = [];
+
+  _changeNumber(){
+    setState(() { 
+      for (int i = 1; i <  _codeControllers.length; i++) {
+        int sumTextStrPrevBlock =  _codeControllers[i - 1]!.text.split('\n').length;
+        sumStrBeforeBlock[i] = sumStrBeforeBlock[i-1] + sumTextStrPrevBlock;
+        _codeControllers[i]!.stringsNumber = sumStrBeforeBlock[i];
+        
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _codeController = CodeController(
-      language: allLanguages[widget.language],
-      theme: THEMES[widget.theme],
-    );
+    sumStrBeforeBlock.add(0);
+    Map<String, dynamic> blocks = jsonDecode(blocksSettings.settings);
+    List<dynamic> blockList = blocks['blocks'];
+    for (int i = 0; i < blockList.length; i++) {
+      _codeControllers.add( CodeController(
+        text: blockList[i]['text'],
+        language: allLanguages[widget.language],
+        theme: THEMES[widget.theme],
+        stringsNumber: sumStrBeforeBlock[i],
+        enabled: blockList[i]['enabled']!.toLowerCase() == 'true'
+      ));
+      sumStrBeforeBlock.add(sumStrBeforeBlock[i] +  blockList[i]['text']!.split('\n').length as int);
+      _codeControllers[i]!.addListener(_changeNumber);
+    }
   }
 
   @override
   void dispose() {
-    _codeController?.dispose();
+    for (int i = 0; i <  _codeControllers.length; i++) {
+      _codeControllers[i]?.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    
+
+    Widget blockOfCode(int index){
+      return Container(
+        key: ValueKey("${sumStrBeforeBlock[index]}"),
+        child: CodeField(
+          controller: _codeControllers[index]!,
+          textStyle: const TextStyle(fontFamily: 'SourceCode'),
+        )
+      );
+    }
+
     return Container(
-      color: _codeController!.theme!['root']!.backgroundColor,
+      color: _codeControllers[0]!.theme!['root']!.backgroundColor,
       height: MediaQuery.of(context).size.height / 13 * 12,
       child: Stack(
         children: [
-          SingleChildScrollView(
-            child: CodeField(
-              controller: _codeController!,
-              textStyle: const TextStyle(fontFamily: 'SourceCode'),
-            )
+          ListView.builder(
+            itemCount: _codeControllers.length,
+            itemBuilder: (BuildContext context, int index){
+              return blockOfCode(index);
+            }
           ),
           Align(
             alignment: Alignment.topRight,
@@ -163,7 +200,11 @@ class _InnerFieldState extends State<InnerField> {
               backgroundColor: Colors.purple[700],
               onPressed: (){
                 setState(() {
-                  _codeController!.text = autoRefactor( _codeController!.text, widget.language);
+                  for (int i = 0; i <  _codeControllers.length; i++) {
+                    if (_codeControllers[i]!.enabled) {
+                      _codeControllers[i]!.text = autoRefactor( _codeControllers[i]!.text, widget.language);
+                    }
+                  }
                 });
               }
             )

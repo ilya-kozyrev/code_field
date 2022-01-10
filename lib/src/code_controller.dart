@@ -41,6 +41,8 @@ class CodeController extends TextEditingController {
 
   /// onChange callback, called whenever the content is changed
   final void Function(String)? onChange;
+  int stringsNumber;
+  bool enabled;
 
   /* Computed members */
   final String languageId = _genId();
@@ -61,6 +63,8 @@ class CodeController extends TextEditingController {
       const TabModifier(),
     ],
     this.webSpaceFix = true,
+    this.stringsNumber = 0,
+    this.enabled = true,
     this.onChange,
   }) : super(text: text) {
     // PatternMap

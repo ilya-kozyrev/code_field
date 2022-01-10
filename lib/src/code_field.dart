@@ -172,7 +172,7 @@ class CodeFieldState extends State<CodeField> {
     final str = widget.controller.text.split("\n");
     final buf = <String>[];
     for (var k = 0; k < str.length; k++) {
-      buf.add((k + 1).toString());
+      buf.add((k + 1 + widget.controller.stringsNumber).toString());
     }
     _numberController?.text = buf.join("\n");
     // Find longest line
@@ -289,7 +289,7 @@ class CodeFieldState extends State<CodeField> {
       cursorColor: cursorColor,
       autocorrect: false,
       enableSuggestions: false,
-      enabled: widget.enabled,
+      enabled: widget.controller.enabled,
       onChanged: widget.onChanged,
       readOnly: widget.readOnly,
     );
