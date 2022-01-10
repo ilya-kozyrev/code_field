@@ -1,9 +1,11 @@
 import 'dart:math';
+
+import 'package:code_text_field/src/autocomplete/popup_controller.dart';
 import 'package:code_text_field/src/code_modifier.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:highlight/highlight_core.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 const _MIDDLE_DOT = '·';
 
@@ -46,7 +48,9 @@ class CodeController extends TextEditingController {
   final String languageId = _genId();
   final styleList = <TextStyle>[];
   final modifierMap = <String, CodeModifier>{};
+  bool isPopupShown = false;
   RegExp? styleRegExp;
+  PopupController popupController = PopupController();
 
   CodeController({
     String? text,
@@ -161,6 +165,19 @@ class CodeController extends TextEditingController {
 
   @override
   set value(TextEditingValue newValue) {
+    popupController.show([
+      "Это",
+      "список",
+      "сгенерированных",
+      "предложений",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+    ]);
     final loc = _insertedLoc(text, newValue.text);
     if (loc != null) {
       final char = newValue.text[loc];
