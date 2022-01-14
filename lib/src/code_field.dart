@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/gestures.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -25,14 +25,23 @@ class LineNumberController extends TextEditingController {
       if (lineNumberBuilder != null) {
         textSpan = lineNumberBuilder!(number, style);
       }
-      if (number == 5){
-        textSpan = TextSpan(text: el, style: style!.copyWith(backgroundColor: Colors.red,),
-        );
+      if (number == 5) {
+        children.add(WidgetSpan(
+            child: Tooltip(
+          message: "hello bro",
+          child: Container(
+            child: Text(
+              el,
+              style: style,
+            ),
+            color: Colors.red,
+          ),
+        )));
+      } else {
+        children.add(textSpan);
       }
-      children.add(textSpan);
       if (k < list.length - 1) children.add(TextSpan(text: "\n"));
     }
-    children.add(WidgetSpan(child: SizedBox(height: 30,child: GestureDetector(onTap: () => print('tap'),)),));
     return TextSpan(children: children);
   }
 }
@@ -258,7 +267,9 @@ class CodeFieldState extends State<CodeField> {
       scrollPadding: widget.padding,
       style: numberTextStyle,
       controller: _numberController,
-      enabled: false,
+      readOnly: true,
+      enableInteractiveSelection: false,
+      mouseCursor: SystemMouseCursors.help,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
       expands: widget.expands,
