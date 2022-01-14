@@ -137,7 +137,6 @@ class _InnerFieldState extends State<InnerField> {
         int sumTextStrPrevBlock =  _codeControllers[i - 1]!.text.split('\n').length;
         sumStrBeforeBlock[i] = sumStrBeforeBlock[i-1] + sumTextStrPrevBlock;
         _codeControllers[i]!.stringsNumber = sumStrBeforeBlock[i];
-        
       }
     });
   }
@@ -150,13 +149,13 @@ class _InnerFieldState extends State<InnerField> {
     List<dynamic> blockList = blocks['blocks'];
     for (int i = 0; i < blockList.length; i++) {
       _codeControllers.add( CodeController(
-        text: blockList[i]['text'],
+        text: blockList[i]['text'].join('\n'),
         language: allLanguages[widget.language],
         theme: THEMES[widget.theme],
         stringsNumber: sumStrBeforeBlock[i],
         enabled: blockList[i]['enabled']!.toLowerCase() == 'true'
       ));
-      sumStrBeforeBlock.add(sumStrBeforeBlock[i] +  blockList[i]['text']!.split('\n').length as int);
+      sumStrBeforeBlock.add(sumStrBeforeBlock[i] +   _codeControllers[i]!.text.split('\n').length as int);
       _codeControllers[i]!.addListener(_changeNumber);
     }
   }

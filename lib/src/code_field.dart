@@ -47,8 +47,8 @@ class LineNumberStyle {
   final double margin;
 
   const LineNumberStyle({
-    this.width = 42.0,
-    this.textAlign = TextAlign.right,
+    this.width = 14.0,
+    this.textAlign = TextAlign.left,
     this.margin = 10.0,
     this.textStyle,
     this.background,
@@ -186,7 +186,7 @@ class CodeFieldState extends State<CodeField> {
   // Wrap the codeField in a horizontal scrollView
   Widget _wrapInScrollView(
       Widget codeField, TextStyle textStyle, double minWidth) {
-    final leftPad = widget.lineNumberStyle.margin / 2;
+    final leftPad = widget.lineNumberStyle.margin / 4;
     final intrinsic = IntrinsicWidth(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -263,7 +263,7 @@ class CodeFieldState extends State<CodeField> {
     );
 
     final numberCol = Container(
-      width: widget.lineNumberStyle.width,
+      width: (((_numberController?.text ?? '\n').split('\n')).last.toString().length) * widget.lineNumberStyle.width,
       padding: EdgeInsets.only(
         left: widget.padding.left,
         right: widget.lineNumberStyle.margin / 2,
@@ -308,6 +308,7 @@ class CodeFieldState extends State<CodeField> {
       ),
     );
     return Container(
+      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
       decoration: widget.decoration,
       color: backgroundCol,
       child: Row(

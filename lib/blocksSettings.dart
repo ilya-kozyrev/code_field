@@ -2,19 +2,19 @@ const String settings = """
 {
   "blocks":[
     {
-    "text": "first block",
+    "text": ["first block", "second line of block"],
     "enabled": "false"
     },
     {
-    "text": "shb;szh",
+    "text": ["you can write here"],
     "enabled": "true"
     },
     {
-    "text": "second block",
+    "text": ["second block"],
     "enabled": "false"
     },
     {
-    "text": "bJOSEGBHIL",
+    "text": ["you can write here too"],
     "enabled": "true"
     }
   ]
