@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -15,18 +16,24 @@ class LineNumberController extends TextEditingController {
   @override
   TextSpan buildTextSpan(
       {required BuildContext context, TextStyle? style, bool? withComposing}) {
-    final children = <TextSpan>[];
+    final children = <InlineSpan>[];
     final list = text.split("\n");
     for (int k = 0; k < list.length; k++) {
       final el = list[k];
       final number = int.parse(el);
       var textSpan = TextSpan(text: el, style: style);
-      if (lineNumberBuilder != null)
+      if (lineNumberBuilder != null) {
         textSpan = lineNumberBuilder!(number, style);
+      }
+      if (number == 5){
+        textSpan = TextSpan(text: el, style: style!.copyWith(backgroundColor: Colors.red,),
+        );
+      }
       children.add(textSpan);
       if (k < list.length - 1) children.add(TextSpan(text: "\n"));
     }
-    return TextSpan(children: children, style: style);
+    children.add(WidgetSpan(child: SizedBox(height: 30,child: GestureDetector(onTap: () => print('tap'),)),));
+    return TextSpan(children: children);
   }
 }
 
