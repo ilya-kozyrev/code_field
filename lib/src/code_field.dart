@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 import './code_controller.dart';
+import '/language_syntax/brackets_counting.dart';
 
 const double LINE_NUMBER_WIDTH = 42;
 const TextAlign LINE_NUMBER_ALIGN = TextAlign.right;
@@ -27,45 +28,58 @@ class TooltipTextSpan extends WidgetSpan {
                 style: style,
               ),
               padding: EdgeInsets.only(right: LINE_NUMBER_MARGIN),
-              decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.all(Radius.circular(4))),
+              decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(Radius.circular(4))),
               width: LINE_NUMBER_WIDTH,
             ),
           ),
         );
 }
 
+Map<int, String> getErrorsMap(String text, String language) {
+  Map<int, String> errors = {};
+  errors.addAll(countingBrackets(text));
+  return errors;
+}
+
 class LineNumberController extends TextEditingController {
   final TextSpan Function(int, TextStyle?)? lineNumberBuilder;
+  String language;
+  String codeFieldText;
 
-  LineNumberController(this.lineNumberBuilder);
+  LineNumberController(this.lineNumberBuilder, this.language, this.codeFieldText);
 
   @override
   TextSpan buildTextSpan(
       {required BuildContext context, TextStyle? style, bool? withComposing}) {
     final children = <InlineSpan>[];
     final list = text.split("\n");
+    Map<int, String> errors = getErrorsMap(codeFieldText, language);
     for (int k = 0; k < list.length; k++) {
       final el = list[k];
       final number = int.parse(el);
       var textSpan = TextSpan(text: el, style: style);
+
       if (lineNumberBuilder != null) {
         textSpan = lineNumberBuilder!(number, style);
       }
-      // will be replaced with error detection function
-      if (number == 5 || number == 20) {
-        children.add(TooltipTextSpan(message: "message about error", number: el, style: style));
+
+      if (errors.containsKey(number)) {
+        children.add(TooltipTextSpan(
+            message: errors[number]!, number: el, style: style));
       } else {
         children.add(textSpan);
         if (k < list.length - 1) children.add(TextSpan(text: "\n"));
       }
-
     }
+    // Съезжает текстовое поле, если ошибка в последней строке.
+    children.add(TextSpan(text: "\n "));
     return TextSpan(children: children);
   }
 }
 
 class LineNumberStyle {
-
   /// Style of the numbers
   final TextStyle? textStyle;
 
@@ -164,7 +178,8 @@ class CodeFieldState extends State<CodeField> {
     _controllers = LinkedScrollControllerGroup();
     _numberScroll = _controllers?.addAndGet();
     _codeScroll = _controllers?.addAndGet();
-    _numberController = LineNumberController(widget.lineNumberBuilder);
+    _numberController = LineNumberController(
+        widget.lineNumberBuilder, widget.controller.languageId, widget.controller.text);
     widget.controller.addListener(_onTextChanged);
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode!.attach(context, onKey: _onKey);
@@ -198,6 +213,7 @@ class CodeFieldState extends State<CodeField> {
       buf.add((k + 1).toString());
     }
     _numberController?.text = buf.join("\n");
+    _numberController?.codeFieldText = widget.controller.text;
     // Find longest line
     longestLine = "";
     widget.controller.text.split("\n").forEach((line) {
