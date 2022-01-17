@@ -8,6 +8,32 @@ import 'package:flutter/services.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 import './code_controller.dart';
 
+const double LINE_NUMBER_WIDTH = 42;
+const TextAlign LINE_NUMBER_ALIGN = TextAlign.right;
+const double LINE_NUMBER_MARGIN = 5;
+
+class TooltipTextSpan extends WidgetSpan {
+  TooltipTextSpan({
+    required String message,
+    required String number,
+    required TextStyle? style,
+  }) : super(
+          child: Tooltip(
+            message: message,
+            child: Container(
+              child: Text(
+                number,
+                textAlign: LINE_NUMBER_ALIGN,
+                style: style,
+              ),
+              padding: EdgeInsets.only(right: LINE_NUMBER_MARGIN),
+              decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.all(Radius.circular(4))),
+              width: LINE_NUMBER_WIDTH,
+            ),
+          ),
+        );
+}
+
 class LineNumberController extends TextEditingController {
   final TextSpan Function(int, TextStyle?)? lineNumberBuilder;
 
@@ -25,33 +51,20 @@ class LineNumberController extends TextEditingController {
       if (lineNumberBuilder != null) {
         textSpan = lineNumberBuilder!(number, style);
       }
-      if (number == 5) {
-        children.add(WidgetSpan(
-            child: Tooltip(
-          message: "hello bro",
-          child: Container(
-            child: Text(
-              el,
-              style: style,
-            ),
-            color: Colors.red,
-          ),
-        )));
+      // will be replaced with error detection function
+      if (number == 5 || number == 20) {
+        children.add(TooltipTextSpan(message: "message about error", number: el, style: style));
       } else {
         children.add(textSpan);
+        if (k < list.length - 1) children.add(TextSpan(text: "\n"));
       }
-      if (k < list.length - 1) children.add(TextSpan(text: "\n"));
+
     }
     return TextSpan(children: children);
   }
 }
 
 class LineNumberStyle {
-  /// Width of the line number column
-  final double width;
-
-  /// Alignment of the numbers in the column
-  final TextAlign textAlign;
 
   /// Style of the numbers
   final TextStyle? textStyle;
@@ -59,13 +72,7 @@ class LineNumberStyle {
   /// Background of the line number column
   final Color? background;
 
-  /// Central horizontal margin between the numbers and the code
-  final double margin;
-
   const LineNumberStyle({
-    this.width = 42.0,
-    this.textAlign = TextAlign.right,
-    this.margin = 10.0,
     this.textStyle,
     this.background,
   });
@@ -202,7 +209,7 @@ class CodeFieldState extends State<CodeField> {
   // Wrap the codeField in a horizontal scrollView
   Widget _wrapInScrollView(
       Widget codeField, TextStyle textStyle, double minWidth) {
-    final leftPad = widget.lineNumberStyle.margin / 2;
+    final leftPad = LINE_NUMBER_MARGIN;
     final intrinsic = IntrinsicWidth(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -269,7 +276,7 @@ class CodeFieldState extends State<CodeField> {
       controller: _numberController,
       readOnly: true,
       enableInteractiveSelection: false,
-      mouseCursor: SystemMouseCursors.help,
+      mouseCursor: SystemMouseCursors.basic,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
       expands: widget.expands,
@@ -277,14 +284,14 @@ class CodeFieldState extends State<CodeField> {
       decoration: InputDecoration(
         disabledBorder: InputBorder.none,
       ),
-      textAlign: widget.lineNumberStyle.textAlign,
+      textAlign: LINE_NUMBER_ALIGN,
     );
 
     final numberCol = Container(
-      width: widget.lineNumberStyle.width,
+      width: LINE_NUMBER_WIDTH,
       padding: EdgeInsets.only(
         left: widget.padding.left,
-        right: widget.lineNumberStyle.margin / 2,
+        right: LINE_NUMBER_MARGIN,
       ),
       color: widget.lineNumberStyle.background,
       child: lineNumberCol,
