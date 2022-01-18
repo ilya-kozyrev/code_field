@@ -1,7 +1,7 @@
 import 'themes.dart';
 import 'package:flutter/material.dart';
 import 'code_text_field.dart';
-import 'package:highlight/languages/all.dart';
+import '/languages/all.dart';
 
 class CustomCodeBox extends StatefulWidget {
   final String language;

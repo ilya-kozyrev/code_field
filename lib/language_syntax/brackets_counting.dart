@@ -16,12 +16,22 @@ Map<int, String> countingBrackets(String text) {
 
     if ((text[i] == ")") | (text[i] == "]") | (text[i] == "}")) {
       if (stackBrackets == "") {
-        errors.addAll({lineNumber: "Unexpected symbol"});
+        if (errors.containsKey(lineNumber)) {
+          errors[lineNumber] = errors[lineNumber]! + "\n" + "Unexpected symbol";
+        } else {
+          errors.addAll({lineNumber: "Unexpected symbol"});
+        }
       } else if (text[i] != brackets[stackBrackets[stackBrackets.length - 1]]) {
-        errors.addAll({
-          lineNumber:
-              "Expected to find '${brackets[stackBrackets[stackBrackets.length - 1]]}', but founded ${text[i]}"
-        });
+        if (errors.containsKey(lineNumber)) {
+          errors[lineNumber] = errors[lineNumber]! +
+              "\n" +
+              "Expected to find '${brackets[stackBrackets[stackBrackets.length - 1]]}', but founded ${text[i]}";
+        } else {
+          errors.addAll({
+            lineNumber:
+                "Expected to find '${brackets[stackBrackets[stackBrackets.length - 1]]}', but founded ${text[i]}"
+          });
+        }
       } else {
         stackBrackets = stackBrackets.substring(0, stackBrackets.length - 1);
       }

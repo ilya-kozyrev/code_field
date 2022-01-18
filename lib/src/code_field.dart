@@ -38,8 +38,12 @@ class TooltipTextSpan extends WidgetSpan {
 }
 
 Map<int, String> getErrorsMap(String text, String language) {
+  print(language);
   Map<int, String> errors = {};
   errors.addAll(countingBrackets(text));
+
+
+
   return errors;
 }
 
