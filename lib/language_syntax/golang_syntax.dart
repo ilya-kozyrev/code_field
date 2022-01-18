@@ -1,8 +1,8 @@
 // Обработка правильности отступов, точек с запятой для цикла for
 // с учетом комментариев, с учетом строк.
-void findGolangErrors(String text) {
+Map<int, String> findGolangErrors(String text) {
   List<String> lines = text.split("\n");
-  List<int> errorLines = [];
+  Map<int, String> errors = {};
   int indentLevel = 0;
 
   for (int i = 0; i < lines.length; i++) {
@@ -35,7 +35,7 @@ void findGolangErrors(String text) {
         countOfSpace++) {
       if (currentLine[countOfSpace] != " ") {
         if (countOfSpace / 4 != indentLevel) {
-          errorLines.add(i);
+          errors.addAll({i: "error in indents"});
         }
         break;
       }
@@ -50,8 +50,8 @@ void findGolangErrors(String text) {
         currentLine.contains(";") &&
         !currentLine.contains(RegExp("\".*for.*[;].*[;].*\"")) &&
         !currentLine.contains(RegExp("'.*for.*[;].*[;].*'"))) {
-      errorLines.add(i);
+      errors.addAll({i: "Missing ';' in for statement"});
     }
   }
-  print("$errorLines - golang");
+  return errors;
 }

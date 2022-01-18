@@ -6,8 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
-import './code_controller.dart';
+
+import 'code_controller.dart';
+
 import '/language_syntax/brackets_counting.dart';
+import '/language_syntax/java_dart_syntax.dart';
+import '/language_syntax/python_syntax.dart';
+import '/language_syntax/scala_syntax.dart';
+import '/language_syntax/golang_syntax.dart';
 
 const double LINE_NUMBER_WIDTH = 42;
 const TextAlign LINE_NUMBER_ALIGN = TextAlign.right;
@@ -38,11 +44,32 @@ class TooltipTextSpan extends WidgetSpan {
 }
 
 Map<int, String> getErrorsMap(String text, String language) {
-  print(language);
   Map<int, String> errors = {};
   errors.addAll(countingBrackets(text));
 
-
+  switch (language) {
+    case "4qely4b4im":
+    case "2qd4b88pk7":
+      {
+        errors.addAll(findJavaDartErrors(text));
+        break;
+      }
+    case "zkmozwg32d":
+      {
+        errors.addAll(findGolangErrors(text));
+        break;
+      }
+    case "att1m9zpnq":
+      {
+        errors.addAll(findPythonErrorTabs(text));
+        break;
+      }
+    case "mswc9yxpqi":
+      {
+        errors.addAll(findScalaErrors(text));
+        break;
+      }
+  }
 
   return errors;
 }
@@ -52,7 +79,8 @@ class LineNumberController extends TextEditingController {
   String language;
   String codeFieldText;
 
-  LineNumberController(this.lineNumberBuilder, this.language, this.codeFieldText);
+  LineNumberController(
+      this.lineNumberBuilder, this.language, this.codeFieldText);
 
   @override
   TextSpan buildTextSpan(
@@ -182,8 +210,8 @@ class CodeFieldState extends State<CodeField> {
     _controllers = LinkedScrollControllerGroup();
     _numberScroll = _controllers?.addAndGet();
     _codeScroll = _controllers?.addAndGet();
-    _numberController = LineNumberController(
-        widget.lineNumberBuilder, widget.controller.languageId, widget.controller.text);
+    _numberController = LineNumberController(widget.lineNumberBuilder,
+        widget.controller.languageId, widget.controller.text);
     widget.controller.addListener(_onTextChanged);
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode!.attach(context, onKey: _onKey);

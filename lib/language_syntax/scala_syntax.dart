@@ -1,6 +1,6 @@
-void findScalaErrors(String text) {
+Map<int, String> findScalaErrors(String text) {
   List<String> lines = text.split("\n");
-  List<int> errorLines = [];
+  Map<int, String> errors = {};
   int indentLevel = 0;
 
   for (int i = 0; i < lines.length; i++) {
@@ -18,7 +18,7 @@ void findScalaErrors(String text) {
     }
     
     if (lines[i].contains(RegExp(":\\s*="))) {
-      errorLines.add(i);
+      errors.addAll({i: "Missing type"});
     }
 
     if (lines[i].contains(RegExp("\\s*def\\s*"))) {
@@ -26,7 +26,7 @@ void findScalaErrors(String text) {
         i++;
       }
       if (!lines[i].contains(RegExp("\\(.*\\):"))) {
-        errorLines.add(i);
+        errors.addAll({i: "Missing ':' in def statement"});
       }
     }
 
@@ -37,7 +37,7 @@ void findScalaErrors(String text) {
     for (int countOfSpace = 0; countOfSpace < lines[i].length; countOfSpace++) {
       if (lines[i][countOfSpace] != " ") {
         if (countOfSpace / 2 != indentLevel) {
-          errorLines.add(i);
+          errors.addAll({i: "error in indents"});
         }
         break;
       }
@@ -48,5 +48,5 @@ void findScalaErrors(String text) {
     }
   }
 
-  print("$errorLines - scala");
+  return errors;
 }

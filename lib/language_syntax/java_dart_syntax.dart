@@ -1,9 +1,9 @@
 // Обработка точек с запятой для цикла for,
 // без учета комментариев и мультистрок.
 
-void findJavaDartErrors(String text) {
+Map<int, String> findJavaDartErrors(String text) {
   List<String> lines = text.split("\n");
-  List<int> errorLines = [];
+  Map<int, String> errors = {};
 
   for (int i = 0; i < lines.length; i++) {
     // ignore comments
@@ -24,21 +24,20 @@ void findJavaDartErrors(String text) {
         i++;
         command += lines[i];
       }
-      if (command.contains(RegExp("=\\s*;"))){
-        errorLines.add(i);
+      if (command.contains(RegExp("=\\s*;"))) {
+        errors.addAll({i: "Missing identifier"});
       }
-
     } else if (lines[i].contains(RegExp("=\\s*;"))) {
-      errorLines.add(i);
+      errors.addAll({i: "Missing identifier"});
     }
     // errors with for in one line
     if (lines[i].contains(RegExp("for\\s*\\(")) &&
         !lines[i].contains(RegExp("for.*\\(.*;.*;.*\\)"))) {
-      errorLines.add(i);
+      errors.addAll({i: "Missing ';' in for statement"});
     }
   }
 
-  print("$errorLines - java/dart");
+  return errors;
 }
 
 bool isLineHasKeyword(String line) {

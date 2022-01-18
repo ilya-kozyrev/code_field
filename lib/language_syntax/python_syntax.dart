@@ -1,7 +1,7 @@
 // Обработка отступов с учетом комментариев и мультистрок.
-void findPythonErrorTabs(String text) {
+Map<int, String> findPythonErrorTabs(String text) {
   List<String> lines = text.split("\n");
-  List<int> errorLines = [];
+  Map<int, String> errors = {};
   bool isPreviousLineContainsColon = false;
   int previousCountOfSpace = 0;
 
@@ -29,7 +29,7 @@ void findPythonErrorTabs(String text) {
 
     if (isPreviousLineContainsColon == true &&
         previousCountOfSpace == countOfSpace) {
-      errorLines.addAll([i, i + 1]);
+      errors.addAll({i: "error in indents"});
     }
 
     previousCountOfSpace = countOfSpace;
@@ -41,5 +41,5 @@ void findPythonErrorTabs(String text) {
     }
   }
 
-  print("$errorLines - python");
+  return errors;
 }
