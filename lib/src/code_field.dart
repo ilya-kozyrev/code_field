@@ -346,6 +346,8 @@ class CodeFieldState extends State<CodeField> {
                         column: cursorX,
                         controller: widget.controller.popupController,
                         editingWindowWidth: windowWidth,
+                        style: textStyle,
+                        backgroundColor: backgroundCol,
                       )
                     : Container(),
               ],
