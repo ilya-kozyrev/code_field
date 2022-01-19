@@ -363,6 +363,7 @@ class CodeFieldState extends State<CodeField> {
                         editingWindowSize: windowSize,
                         style: textStyle,
                         backgroundColor: backgroundCol,
+                        parentFocusNode: _focusNode!,
                       )
                     : Container(),
               ],

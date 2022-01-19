@@ -11,6 +11,7 @@ class Popup extends StatefulWidget {
   final TextStyle style;
   final Color? backgroundColor;
   final PopupController controller;
+  final FocusNode parentFocusNode;
 
   Popup(
       {Key? key,
@@ -19,6 +20,7 @@ class Popup extends StatefulWidget {
       required this.controller,
       required this.editingWindowSize,
       required this.style,
+      required this.parentFocusNode,
       this.backgroundColor})
       : super(key: key);
 
@@ -91,11 +93,7 @@ class _PopupState extends State<Popup> {
       ),
       onTap: () {
         widget.controller.selectedIndex = index;
-      },
-      onDoubleTap: () {
-        widget.controller.selectedIndex = index;
-        widget.controller.hide();
-        rebuild();
+        widget.parentFocusNode.requestFocus();
       },
     );
   }
