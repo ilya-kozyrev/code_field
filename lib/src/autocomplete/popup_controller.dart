@@ -22,6 +22,10 @@ class PopupController extends ChangeNotifier {
     this.suggestions = suggestions;
     _selectedIndex = 0;
     isPopupShown = true;
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      if (itemScrollController.isAttached)
+        itemScrollController.jumpTo(index: 0);
+    });
   }
 
   void hide() {

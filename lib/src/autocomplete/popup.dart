@@ -7,7 +7,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class Popup extends StatefulWidget {
   final double row;
   final double column;
-  final double editingWindowWidth;
+  final Size editingWindowSize;
   final TextStyle style;
   final Color? backgroundColor;
   final PopupController controller;
@@ -17,7 +17,7 @@ class Popup extends StatefulWidget {
       required this.row,
       required this.column,
       required this.controller,
-      required this.editingWindowWidth,
+      required this.editingWindowSize,
       required this.style,
       this.backgroundColor})
       : super(key: key);
@@ -48,8 +48,8 @@ class _PopupState extends State<Popup> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        left: min(widget.column, widget.editingWindowWidth - width),
-        top: widget.row + 30,
+        left: min(widget.column, widget.editingWindowSize.width - width),
+        top: widget.row,
       ),
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: height, maxWidth: width),
@@ -77,21 +77,27 @@ class _PopupState extends State<Popup> {
 
   Widget _buildListItem(int index) {
     return InkWell(
-        child: Container(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-            child: Text(
-              widget.controller.suggestions[index],
-              style: widget.style,
-            ),
+      child: Container(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+          child: Text(
+            widget.controller.suggestions[index],
+            style: widget.style,
           ),
-          color: widget.controller.selectedIndex == index
-              ? Colors.blueAccent.withOpacity(0.5)
-              : null,
         ),
-        onTap: () {
-          widget.controller.selectedIndex = index;
-        });
+        color: widget.controller.selectedIndex == index
+            ? Colors.blueAccent.withOpacity(0.5)
+            : null,
+      ),
+      onTap: () {
+        widget.controller.selectedIndex = index;
+      },
+      onDoubleTap: () {
+        widget.controller.selectedIndex = index;
+        widget.controller.hide();
+        rebuild();
+      },
+    );
   }
 
   void rebuild() {

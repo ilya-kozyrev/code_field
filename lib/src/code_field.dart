@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:code_text_field/src/autocomplete/popup.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -135,6 +136,7 @@ class CodeFieldState extends State<CodeField> {
   ScrollController? _horizontalCodeScroll;
   LineNumberController? _numberController;
   GlobalKey _codeFieldKey = GlobalKey();
+
   double cursorX = 0.0;
   double cursorY = 0.0;
   double painterWidth = 0.0;
@@ -145,7 +147,7 @@ class CodeFieldState extends State<CodeField> {
   FocusNode? _focusNode;
   String? lines;
   String longestLine = "";
-  late double windowWidth;
+  late Size windowSize;
 
   @override
   void initState() {
@@ -161,8 +163,11 @@ class CodeFieldState extends State<CodeField> {
     _horizontalCodeScroll = ScrollController(initialScrollOffset: 0.0);
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode!.attach(context, onKey: _onKey);
-    WidgetsBinding.instance!.addPostFrameCallback(
-        (_) => windowWidth = _codeFieldKey.currentContext!.size!.width);
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      double width = _codeFieldKey.currentContext!.size!.width;
+      double height = _codeFieldKey.currentContext!.size!.height;
+      windowSize = Size(width - widget.lineNumberStyle.width, height);
+    });
     _onTextChanged();
   }
 
@@ -185,7 +190,13 @@ class CodeFieldState extends State<CodeField> {
   }
 
   void rebuild() {
-    setState(() {});
+    setState(() {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        double width = _codeFieldKey.currentContext!.size!.width;
+        double height = _codeFieldKey.currentContext!.size!.height;
+        windowSize = Size(width - widget.lineNumberStyle.width, height);
+      });
+    });
   }
 
   void _onTextChanged() {
@@ -204,7 +215,7 @@ class CodeFieldState extends State<CodeField> {
     rebuild();
   }
 
-  // Wrap the codeField in a horizontal scrollView
+// Wrap the codeField in a horizontal scrollView
   Widget _wrapInScrollView(
       Widget codeField, TextStyle textStyle, double minWidth) {
     final leftPad = widget.lineNumberStyle.margin / 2;
@@ -280,6 +291,8 @@ class CodeFieldState extends State<CodeField> {
       expands: widget.expands,
       scrollController: _numberScroll,
       decoration: InputDecoration(
+        isCollapsed: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0),
         disabledBorder: InputBorder.none,
       ),
       textAlign: widget.lineNumberStyle.textAlign,
@@ -304,8 +317,9 @@ class CodeFieldState extends State<CodeField> {
       maxLines: widget.maxLines,
       scrollController: _codeScroll,
       expands: widget.expands,
-      key: _codeFieldKey,
       decoration: InputDecoration(
+        isCollapsed: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0),
         disabledBorder: InputBorder.none,
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
@@ -332,6 +346,7 @@ class CodeFieldState extends State<CodeField> {
     return Container(
       decoration: widget.decoration,
       color: backgroundCol,
+      key: _codeFieldKey,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -345,7 +360,7 @@ class CodeFieldState extends State<CodeField> {
                         row: cursorY,
                         column: cursorX,
                         controller: widget.controller.popupController,
-                        editingWindowWidth: windowWidth,
+                        editingWindowSize: windowSize,
                         style: textStyle,
                         backgroundColor: backgroundCol,
                       )
@@ -368,9 +383,24 @@ class CodeFieldState extends State<CodeField> {
     Rect caretPrototype = Rect.fromLTWH(0.0, 0.0, 0.0, 0.0);
     Offset caretOffset =
         painter.getOffsetForCaret(cursorTextPosition, caretPrototype);
+    double caretHeight = (widget.controller.selection.base.offset > 0)
+        ? painter.getFullHeightForCaret(cursorTextPosition, caretPrototype)!
+        : 0;
+
     setState(() {
-      cursorX = max(caretOffset.dx - _horizontalCodeScroll!.offset, 0);
-      cursorY = caretOffset.dy;
+      cursorX = max(
+          caretOffset.dx +
+              widget.padding.left +
+              widget.lineNumberStyle.margin / 2 -
+              _horizontalCodeScroll!.offset,
+          0);
+      cursorY = max(
+          caretOffset.dy +
+              caretHeight +
+              16 +
+              widget.padding.top -
+              _codeScroll!.offset,
+          0);
       painterWidth = painter.width;
       painterHeight = painter.height;
     });
