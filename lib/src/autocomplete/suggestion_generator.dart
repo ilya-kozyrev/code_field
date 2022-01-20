@@ -93,7 +93,7 @@ class SuggestionGenerator {
     return keywords;
   }
 
-  /// Returns text without word pointed to by the cursor
+  /// Returns text without the word pointed to by the cursor
   String _excludeCurrentWord() {
     return text.replaceRange(cursorPosition - getCurrentWordPrefix().length,
         cursorPosition + _getCurrentWordSuffix().length, "");

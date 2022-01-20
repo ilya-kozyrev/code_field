@@ -51,7 +51,7 @@ class CodeController extends TextEditingController {
   final modifierMap = <String, CodeModifier>{};
   bool isPopupShown = false;
   RegExp? styleRegExp;
-  PopupController popupController = PopupController();
+  late PopupController popupController;
   SuggestionGenerator? suggestionGenerator;
 
   CodeController({
@@ -82,6 +82,7 @@ class CodeController extends TextEditingController {
     });
     suggestionGenerator = SuggestionGenerator(
         'language_id'); // TODO: replace string with some generated value for current language id
+    this.popupController = PopupController(onCompletionSelected: this.insertSelectedWord);
   }
 
   /// Replaces the current [selection] by [str]

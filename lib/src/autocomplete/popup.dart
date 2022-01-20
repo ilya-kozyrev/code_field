@@ -4,6 +4,7 @@ import 'package:code_text_field/src/autocomplete/popup_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
+/// Popup window displaying the list of possible completions
 class Popup extends StatefulWidget {
   final double row;
   final double column;
@@ -78,24 +79,36 @@ class _PopupState extends State<Popup> {
   }
 
   Widget _buildListItem(int index) {
-    return InkWell(
-      child: Container(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-          child: Text(
-            widget.controller.suggestions[index],
-            overflow: TextOverflow.ellipsis,
-            style: widget.style,
+    return Material(
+      color: Colors.grey.withOpacity(0.1),
+      child: InkWell(
+        child: Container(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+            child: Text(
+              widget.controller.suggestions[index],
+              overflow: TextOverflow.ellipsis,
+              style: widget.style,
+            ),
           ),
+          color: widget.controller.selectedIndex == index
+              ? Colors.blueAccent.withOpacity(0.5)
+              : Colors.transparent,
         ),
-        color: widget.controller.selectedIndex == index
-            ? Colors.blueAccent.withOpacity(0.5)
-            : null,
+        onTap: () {
+          widget.controller.selectedIndex = index;
+          widget.parentFocusNode.requestFocus();
+        },
+        onDoubleTap: () {
+          widget.controller.selectedIndex = index;
+          widget.parentFocusNode.requestFocus();
+          widget.controller.onCompletionSelected();
+
+        },
+        hoverColor: Colors.grey.withOpacity(0.1),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
-      onTap: () {
-        widget.controller.selectedIndex = index;
-        widget.parentFocusNode.requestFocus();
-      },
     );
   }
 

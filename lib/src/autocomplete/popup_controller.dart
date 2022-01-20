@@ -5,11 +5,15 @@ class PopupController extends ChangeNotifier {
   late List<String> suggestions;
   int _selectedIndex = 0;
   bool isPopupShown = false;
-  late double height;
-  late double width;
+
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
+
+  /// Should be called when an active list item is selected to be inserted into the text
+  late final void Function() onCompletionSelected;
+
+  PopupController({required this.onCompletionSelected}) : super();
 
   set selectedIndex(int value) {
     _selectedIndex = value;
@@ -32,6 +36,7 @@ class PopupController extends ChangeNotifier {
     isPopupShown = false;
   }
 
+  /// Changes the selected item and scrolls through the list of completions on keyboard arrows pressed
   void scrollByArrow(ScrollDirection direction) {
     int previousSelectedIndex = selectedIndex;
     if (direction == ScrollDirection.up)
