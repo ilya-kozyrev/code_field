@@ -6,7 +6,6 @@ Map<int, String> findPythonErrorTabs(String text) {
   int previousCountOfSpace = 0;
 
   for (int i = 0; i < lines.length; i++) {
-    int lineLength = lines[i].length;
     int countOfSpace = 0;
 
     if (lines[i].trim().isEmpty || lines[i].startsWith(RegExp("\\s*#"))) {
@@ -15,14 +14,19 @@ Map<int, String> findPythonErrorTabs(String text) {
 
     if (lines[i].startsWith(RegExp(".*'''"))) {
       do {
+        if (lines[i].contains(RegExp("'''.*'''")))
+          break;
         i++;
-      } while ((!lines[i].contains(RegExp("'''"))) && (i < lines.length));
+      } while ((!lines[i].contains(RegExp("'''"))) && (i < lines.length - 1));
     } else if (lines[i].startsWith(RegExp(".*\"\"\""))) {
       do {
+        if (lines[i].contains(RegExp("\"\"\".*\"\"\"")))
+          break;
         i++;
-      } while ((!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length));
+      } while ((!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
     }
 
+    int lineLength = lines[i].length;
     while (lines[i][countOfSpace] == " " && (countOfSpace < lineLength)) {
       countOfSpace++;
     }

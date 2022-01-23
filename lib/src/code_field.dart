@@ -69,7 +69,6 @@ Map<int, String> getErrorsMap(String text, String language) {
         break;
       }
   }
-  print(errors);
   return errors;
 }
 
