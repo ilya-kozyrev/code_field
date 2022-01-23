@@ -37,5 +37,15 @@ Map<int, String> countingBrackets(String text) {
       }
     }
   }
+
+  if (stackBrackets.isNotEmpty) {
+    if (errors.containsKey(lineNumber)) {
+      errors[lineNumber] = errors[lineNumber]! + "\n" + "Missing bracket";
+    }
+    else {
+      errors.addAll({lineNumber : "Missing bracket"});
+    }
+  }
+
   return errors;
 }

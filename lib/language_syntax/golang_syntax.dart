@@ -35,7 +35,7 @@ Map<int, String> findGolangErrors(String text) {
         countOfSpace++) {
       if (currentLine[countOfSpace] != " ") {
         if (countOfSpace / 4 != indentLevel) {
-          errors.addAll({i: "error in indents"});
+          errors.addAll({(i + 1): "error in indents"});
         }
         break;
       }
@@ -50,7 +50,7 @@ Map<int, String> findGolangErrors(String text) {
         currentLine.contains(";") &&
         !currentLine.contains(RegExp("\".*for.*[;].*[;].*\"")) &&
         !currentLine.contains(RegExp("'.*for.*[;].*[;].*'"))) {
-      errors.addAll({i: "Missing ';' in for statement"});
+      errors.addAll({(i + 1): "Missing ';' in for statement"});
     }
   }
   return errors;

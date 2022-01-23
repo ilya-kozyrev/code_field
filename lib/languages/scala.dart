@@ -1,12 +1,13 @@
 import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
+import 'main_mode.dart';
 
 const KEYWORD = "type yield lazy override def with val var sealed abstract"
     " private trait object if forSome for while throw finally protected"
     " extends import final return else break new catch super class case"
     " package default try this match continue throws implicit";
 
-final scala = Mode(refs: {
+final scala = MainMode(nameOfLanguage: "scala", refs: {
   'titleMode': Mode(
       className: "title",
       begin:
@@ -23,16 +24,13 @@ final scala = Mode(refs: {
     Mode(
         begin: "[a-z]+\"\"\"",
         end: "\"\"\"",
-        contains: [
-          BACKSLASH_ESCAPE,
-          Mode(ref: 'substringMode')
-        ],
+        contains: [BACKSLASH_ESCAPE, Mode(ref: 'substringMode')],
         relevance: 10),
     Mode(begin: "\"", end: "\\n|\"", contains: [BACKSLASH_ESCAPE]),
-    Mode(begin: "[a-z]+\"", end: "\\n|\"", contains: [
-      BACKSLASH_ESCAPE,
-      Mode(ref: 'substringMode')
-    ]),
+    Mode(
+        begin: "[a-z]+\"",
+        end: "\\n|\"",
+        contains: [BACKSLASH_ESCAPE, Mode(ref: 'substringMode')]),
   ]),
   'methodsMode': Mode(
     className: "bullet",

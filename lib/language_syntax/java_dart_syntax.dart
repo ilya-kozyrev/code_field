@@ -25,18 +25,17 @@ Map<int, String> findJavaDartErrors(String text) {
         command += lines[i];
       }
       if (command.contains(RegExp("=\\s*;"))) {
-        errors.addAll({i: "Missing identifier"});
+        errors.addAll({(i + 1): "Missing identifier"});
       }
     } else if (lines[i].contains(RegExp("=\\s*;"))) {
-      errors.addAll({i: "Missing identifier"});
+      errors.addAll({(i + 1): "Missing identifier"});
     }
     // errors with for in one line
     if (lines[i].contains(RegExp("for\\s*\\(")) &&
         !lines[i].contains(RegExp("for.*\\(.*;.*;.*\\)"))) {
-      errors.addAll({i: "Missing ';' in for statement"});
+      errors.addAll({(i + 1): "Missing ';' in for statement"});
     }
   }
-
   return errors;
 }
 

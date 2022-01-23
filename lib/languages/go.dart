@@ -1,5 +1,6 @@
 import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
+import 'main_mode.dart';
 
 const KEYWORD = "break default func interface select case map struct chan"
     " else goto package switch const fallthrough if range type continue for"
@@ -11,7 +12,8 @@ const TYPE = "var int8 int16 int32 int64 uint8 uint16 uint32 uint64 uintptr"
 const BUILT_IN = "append cap close complex copy imag len make new"
     " panic print println real recover delete";
 
-final go = Mode(
+final go = MainMode(
+    nameOfLanguage: "golang",
     refs: {
       "stringsMode": Mode(
         className: "string",

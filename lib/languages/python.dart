@@ -1,12 +1,14 @@
 import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
+import 'main_mode.dart';
 
 const KEYWORD = "and elif is global as in if"
     " from raise for except finally print import pass return"
     " exec else break not with class assert yield try while continue"
     " del or def lambda async await nonlocal|10";
 
-final python = Mode(
+final python = MainMode(
+    nameOfLanguage: "python",
     refs: {
       'substringMode': Mode(
           className: "subst",

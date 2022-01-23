@@ -46,31 +46,30 @@ class TooltipTextSpan extends WidgetSpan {
 Map<int, String> getErrorsMap(String text, String language) {
   Map<int, String> errors = {};
   errors.addAll(countingBrackets(text));
-
   switch (language) {
-    case "4qely4b4im":
-    case "2qd4b88pk7":
+    case "java":
+    case "dart":
       {
         errors.addAll(findJavaDartErrors(text));
         break;
       }
-    case "zkmozwg32d":
+    case "golang":
       {
         errors.addAll(findGolangErrors(text));
         break;
       }
-    case "att1m9zpnq":
+    case "python":
       {
         errors.addAll(findPythonErrorTabs(text));
         break;
       }
-    case "mswc9yxpqi":
+    case "scala":
       {
         errors.addAll(findScalaErrors(text));
         break;
       }
   }
-
+  print(errors);
   return errors;
 }
 
@@ -211,7 +210,7 @@ class CodeFieldState extends State<CodeField> {
     _numberScroll = _controllers?.addAndGet();
     _codeScroll = _controllers?.addAndGet();
     _numberController = LineNumberController(widget.lineNumberBuilder,
-        widget.controller.languageId, widget.controller.text);
+        widget.controller.language!.nameOfLanguage, widget.controller.text);
     widget.controller.addListener(_onTextChanged);
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode!.attach(context, onKey: _onKey);

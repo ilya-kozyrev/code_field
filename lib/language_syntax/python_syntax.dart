@@ -29,7 +29,7 @@ Map<int, String> findPythonErrorTabs(String text) {
 
     if (isPreviousLineContainsColon == true &&
         previousCountOfSpace == countOfSpace) {
-      errors.addAll({i: "error in indents"});
+      errors.addAll({(i + 1): "error in indents"});
     }
 
     previousCountOfSpace = countOfSpace;

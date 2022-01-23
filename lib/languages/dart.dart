@@ -2,6 +2,7 @@
 
 import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
+import 'main_mode.dart';
 
 const KEYWORD = "abstract as assert async await break case catch class"
     " const continue covariant default deferred do dynamic else enum"
@@ -19,7 +20,7 @@ const BUILT_IN = "Comparable DateTime Duration Function Iterable"
 
 const Type = "bool double int String Symbol Runes";
 
-final dart = Mode(refs: {
+final dart = MainMode(nameOfLanguage: "dart", refs: {
   'substringMode': Mode(
       className: "subst",
       variants: [Mode(begin: "\\\${", end: "}")],
@@ -63,7 +64,7 @@ final dart = Mode(refs: {
 }, keywords: {
   "keyword": KEYWORD,
   "built_in": BUILT_IN,
-  "type" : Type,
+  "type": Type,
 }, contains: [
   Mode(ref: 'stringMode'),
   Mode(ref: 'methodsMode'),

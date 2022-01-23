@@ -18,7 +18,7 @@ Map<int, String> findScalaErrors(String text) {
     }
     
     if (lines[i].contains(RegExp(":\\s*="))) {
-      errors.addAll({i: "Missing type"});
+      errors.addAll({(i + 1): "Missing type"});
     }
 
     if (lines[i].contains(RegExp("\\s*def\\s*"))) {
@@ -26,7 +26,7 @@ Map<int, String> findScalaErrors(String text) {
         i++;
       }
       if (!lines[i].contains(RegExp("\\(.*\\):"))) {
-        errors.addAll({i: "Missing ':' in def statement"});
+        errors.addAll({(i + 1): "Missing ':' in def statement"});
       }
     }
 
@@ -37,7 +37,7 @@ Map<int, String> findScalaErrors(String text) {
     for (int countOfSpace = 0; countOfSpace < lines[i].length; countOfSpace++) {
       if (lines[i][countOfSpace] != " ") {
         if (countOfSpace / 2 != indentLevel) {
-          errors.addAll({i: "error in indents"});
+          errors.addAll({(i + 1): "error in indents"});
         }
         break;
       }

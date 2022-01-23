@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:highlight/highlight_core.dart';
+import 'package:code_text_field/languages/main_mode.dart';
 
 const _MIDDLE_DOT = '·';
 
@@ -17,7 +18,7 @@ class EditorParams {
 
 class CodeController extends TextEditingController {
   /// A highligh language to parse the text with
-  final Mode? language;
+  final MainMode? language;
 
   /// The theme to apply to the [language] parsing result
   final Map<String, TextStyle>? theme;

@@ -1,7 +1,9 @@
 import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
+import 'main_mode.dart';
 
-const String KEYWORD = "false synchronized abstract private static null if const"
+const String KEYWORD =
+    "false synchronized abstract private static null if const"
     " for true while strictfp finally protected import native final void enum"
     " else break transient catch instanceof super volatile case assert short"
     " package default public try this switch continue throws protected"
@@ -10,13 +12,11 @@ const String KEYWORD = "false synchronized abstract private static null if const
 const String TYPE = "int boolean String float char var long byte double"
     "short Short Byte Integer Long Float Double Character Boolean";
 
-final java = Mode(
+final java = MainMode(
+    nameOfLanguage: "java",
     refs: {},
     aliases: ["jsp"],
-    keywords: {
-      "keyword" : KEYWORD,
-      "type" : TYPE
-    },
+    keywords: {"keyword": KEYWORD, "type": TYPE},
     illegal: "<\\/|#",
     contains: [
       Mode(
@@ -63,10 +63,9 @@ final java = Mode(
           returnBegin: true,
           end: "[{;=]",
           excludeEnd: true,
-          keywords:
-          {
-            "keyword" : KEYWORD,
-            "type" : TYPE,
+          keywords: {
+            "keyword": KEYWORD,
+            "type": TYPE,
           },
           contains: [
             Mode(
@@ -78,10 +77,9 @@ final java = Mode(
                 className: "params",
                 begin: "\\(",
                 end: "\\)",
-                keywords:
-                {
-                  "keyword" : KEYWORD,
-                  "type" : TYPE,
+                keywords: {
+                  "keyword": KEYWORD,
+                  "type": TYPE,
                 },
                 relevance: 0,
                 contains: [
