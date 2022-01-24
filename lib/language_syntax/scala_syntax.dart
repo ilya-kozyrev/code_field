@@ -9,7 +9,7 @@ Map<int, String> findScalaErrors(String text) {
       continue;
     }
     if (lines[i].startsWith(RegExp("\\s*/\\*"))) {
-      while ((!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length)) {
+      while ((!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
         i++;
         lines[i] = lines[i];
       }

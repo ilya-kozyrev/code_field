@@ -11,7 +11,7 @@ Map<int, String> findJavaDartErrors(String text) {
       continue;
     }
     if (lines[i].startsWith(RegExp("\\s*/\\*"))) {
-      while ((!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length)) {
+      while ((!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
         i++;
       }
     }
