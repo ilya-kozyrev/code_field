@@ -31,8 +31,8 @@ final dart = MainMode(nameOfLanguage: "dart", refs: {
   'stringMode': Mode(className: "string", variants: [
     Mode(begin: "r'''", end: "'''"),
     Mode(begin: "r\"\"\"", end: "\"\"\""),
-    Mode(begin: "r'", end: "'", illegal: "\\n"),
-    Mode(begin: "r\"", end: "\"", illegal: "\\n"),
+    Mode(begin: "r'", end: "'|\\n"),
+    Mode(begin: "r\"", end: "\"|\\n"),
     Mode(begin: "'''", end: "'''", contains: [
       BACKSLASH_ESCAPE,
       Mode(ref: 'substringMode2'),
@@ -43,12 +43,12 @@ final dart = MainMode(nameOfLanguage: "dart", refs: {
       Mode(ref: 'substringMode2'),
       Mode(ref: 'substringMode')
     ]),
-    Mode(begin: "'", end: "'", illegal: "\\n", contains: [
+    Mode(begin: "'", end: "'|\\n", contains: [
       BACKSLASH_ESCAPE,
       Mode(ref: 'substringMode2'),
       Mode(ref: 'substringMode')
     ]),
-    Mode(begin: "\"", end: "\"", illegal: "\\n", contains: [
+    Mode(begin: "\"", end: "\"|\\n", contains: [
       BACKSLASH_ESCAPE,
       Mode(ref: 'substringMode2'),
       Mode(ref: 'substringMode')
