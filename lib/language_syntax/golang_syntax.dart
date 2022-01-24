@@ -14,8 +14,8 @@ Map<int, String> findGolangErrors(String text) {
     }
 
     if (currentLine.startsWith(RegExp("\\s*/\\*"))) {
-      while (
-          (!currentLine.contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
+      while ((!currentLine.contains(RegExp("\\*/\\s*"))) &&
+          (i < lines.length - 1)) {
         i++;
         currentLine = lines[i];
       }

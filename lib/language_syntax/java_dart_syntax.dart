@@ -38,13 +38,3 @@ Map<int, String> findJavaDartErrors(String text) {
   }
   return errors;
 }
-
-bool isLineHasKeyword(String line) {
-  List<String> keywords = ["for", "if", "while"];
-  for (String keyword in keywords) {
-    if (line.contains(keyword)) {
-      return true;
-    }
-  }
-  return false;
-}
