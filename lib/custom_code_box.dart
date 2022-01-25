@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'code_text_field.dart';
 import 'package:highlight/languages/all.dart';
 import 'configuration files/blocksSettings.dart' as blocksSettings;
+import 'constants.dart';
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
@@ -32,11 +33,11 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
   }
 
   List<String?> languageList = <String>[
-    "java",
-    "go",
-    "python",
-    "scala",
-    "dart"
+    java,
+    go,
+    python,
+    scala,
+    dart
   ];
 
   List<String?> themeList  = <String>[
