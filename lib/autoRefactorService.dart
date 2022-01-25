@@ -1,4 +1,4 @@
-import 'autoRefactoringSettings.dart' as refact;
+import 'configuration files/autoRefactoringSettings.dart' as refact;
 import 'dart:convert';
 
 String autoRefactor(String text, String language){

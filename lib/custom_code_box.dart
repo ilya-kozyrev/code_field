@@ -5,7 +5,7 @@ import 'autoRefactorService.dart';
 import 'package:flutter/material.dart';
 import 'code_text_field.dart';
 import 'package:highlight/languages/all.dart';
-import 'blocksSettings.dart' as blocksSettings;
+import 'configuration files/blocksSettings.dart' as blocksSettings;
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
@@ -129,14 +129,14 @@ class InnerField extends StatefulWidget {
 
 class _InnerFieldState extends State<InnerField> {
   List<CodeController?> _codeControllers = [];
-  List<int> sumStrBeforeBlock = [];
+  List<int> numberOfLinesBeforeBlock = [];
 
   _changeNumber(){
     setState(() { 
       for (int i = 1; i <  _codeControllers.length; i++) {
-        int sumTextStrPrevBlock =  _codeControllers[i - 1]!.text.split('\n').length;
-        sumStrBeforeBlock[i] = sumStrBeforeBlock[i-1] + sumTextStrPrevBlock;
-        _codeControllers[i]!.stringsNumber = sumStrBeforeBlock[i];
+        int numberOfLinesPrevBlock =  _codeControllers[i - 1]!.text.split('\n').length;
+        numberOfLinesBeforeBlock[i] = numberOfLinesBeforeBlock[i-1] + numberOfLinesPrevBlock;
+        _codeControllers[i]!.stringsNumber = numberOfLinesBeforeBlock[i];
       }
     });
   }
@@ -144,7 +144,7 @@ class _InnerFieldState extends State<InnerField> {
   @override
   void initState() {
     super.initState();
-    sumStrBeforeBlock.add(0);
+    numberOfLinesBeforeBlock.add(0);
     Map<String, dynamic> blocks = jsonDecode(blocksSettings.settings);
     List<dynamic> blockList = blocks['blocks'];
     for (int i = 0; i < blockList.length; i++) {
@@ -152,10 +152,10 @@ class _InnerFieldState extends State<InnerField> {
         text: blockList[i]['text'].join('\n'),
         language: allLanguages[widget.language],
         theme: THEMES[widget.theme],
-        stringsNumber: sumStrBeforeBlock[i],
+        stringsNumber: numberOfLinesBeforeBlock[i],
         enabled: blockList[i]['enabled']!.toLowerCase() == 'true'
       ));
-      sumStrBeforeBlock.add(sumStrBeforeBlock[i] +   _codeControllers[i]!.text.split('\n').length as int);
+      numberOfLinesBeforeBlock.add(numberOfLinesBeforeBlock[i] +   _codeControllers[i]!.text.split('\n').length as int);
       _codeControllers[i]!.addListener(_changeNumber);
     }
   }
@@ -173,7 +173,7 @@ class _InnerFieldState extends State<InnerField> {
 
     Widget blockOfCode(int index){
       return Container(
-        key: ValueKey("${sumStrBeforeBlock[index]}"),
+        key: ValueKey("${numberOfLinesBeforeBlock[index]}"),
         child: CodeField(
           controller: _codeControllers[index]!,
           textStyle: const TextStyle(fontFamily: 'SourceCode'),
