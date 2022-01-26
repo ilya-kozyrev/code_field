@@ -4,6 +4,7 @@ Map<int, String> countingBrackets(String text) {
   int lineNumber = 1;
   String stackBrackets = "";
   Map<int, String> errors = {};
+  List<int> errorsLocations = [];
   bool isCharInString = false;
   bool isShieldingInString = false;
   String openQuote = "";
@@ -20,7 +21,7 @@ Map<int, String> countingBrackets(String text) {
       } else if ((openQuote == char) &&
           isCharInString &&
           ((i - 2) >= 0) &&
-          ((text[i - 1] != "\\") || (text[i-2] == "\\"))) {
+          ((text[i - 1] != "\\") || (text[i - 2] == "\\"))) {
         openQuote = "";
       } else {
         continue;
@@ -49,6 +50,7 @@ Map<int, String> countingBrackets(String text) {
       continue;
     } else if ((char == "(") | (char == "[") | (char == "{")) {
       stackBrackets = stackBrackets + char;
+      errorsLocations.add(lineNumber);
     } else if ((char == ")") | (char == "]") | (char == "}")) {
       if (stackBrackets == "") {
         if (errors.containsKey(lineNumber)) {
@@ -69,15 +71,20 @@ Map<int, String> countingBrackets(String text) {
         }
       } else {
         stackBrackets = stackBrackets.substring(0, stackBrackets.length - 1);
+        errorsLocations.removeLast();
       }
     }
   }
 
   if (stackBrackets.isNotEmpty) {
-    if (errors.containsKey(lineNumber)) {
-      errors[lineNumber] = errors[lineNumber]! + "\n" + "Missing bracket";
+    if (errors.containsKey(errorsLocations[errorsLocations.length - 1])) {
+      errors[errorsLocations[errorsLocations.length - 1]] =
+          errors[errorsLocations[errorsLocations.length - 1]]! +
+              "\n" +
+              "Missing bracket";
     } else {
-      errors.addAll({lineNumber: "Missing bracket"});
+      errors.addAll(
+          {errorsLocations[errorsLocations.length - 1]: "Missing bracket"});
     }
   }
 
