@@ -35,18 +35,16 @@ Map<int, String> countingBrackets(String text) {
       } else {
         isCharInString = true;
       }
-      continue;
     } else if ((char == "\$") &&
         ((i + 1) < text.length) &&
         (text[i + 1] == "{") &&
         isCharInString) {
       isShieldingInString = true;
       isCharInString = false;
+      i++;
     } else if (isShieldingInString && (char == "}")) {
       isShieldingInString = false;
       isCharInString = true;
-      stackBrackets = stackBrackets.substring(0, stackBrackets.length - 1);
-      continue;
     } else if (isCharInString) {
       continue;
     } else if ((char == "(") | (char == "[") | (char == "{")) {
