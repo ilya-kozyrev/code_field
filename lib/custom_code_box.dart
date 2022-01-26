@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:highlight/languages/all.dart';
 
 import 'autoRefactorService.dart';
 import 'code_text_field.dart';
-import 'constants/constants';
+import 'constants/constants.dart';
 import 'constants/themes.dart';
+
+Future<String> loadBlockSettings() async{
+  return await rootBundle.loadString('assets/settings/blockSettings.json');
+}
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
@@ -103,23 +110,52 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
         ]
       )
     );
-    final codeField = InnerField(
+    Widget codeField(String blocks) => InnerField(
       key: ValueKey("$language - $theme - $reset"),
       language: language!,
       theme: theme!,
+      blocks: blocks
     );
-    return Column(children: [
-      buttons,
-      codeField,
-    ]);
+
+    return FutureBuilder<String>(
+      future: loadBlockSettings(),
+      builder: (context, AsyncSnapshot<String> async) {
+        if (async.connectionState == ConnectionState.active ||
+            async.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (async.connectionState == ConnectionState.done) {
+          if (async.hasError) {
+            return Center(
+              child: Text("ERROR"),
+            );
+          } 
+          else if (async.hasData) {
+            String blocks = async.data ?? '';
+            return Column(
+              children: [
+                buttons,
+                codeField(blocks),
+              ]
+            );
+          }
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    );
   }
 }
 
 class InnerField extends StatefulWidget {
   final String language;
   final String theme;
+  final String blocks;
 
-  const InnerField({Key? key, required this.language, required this.theme})
+  const InnerField({Key? key, required this.language, required this.theme, required this.blocks})
       : super(key: key);
 
   @override
@@ -144,7 +180,7 @@ class _InnerFieldState extends State<InnerField> {
   void initState() {
     super.initState();
     numberOfLinesBeforeBlock.add(0);
-    Map<String, dynamic> blocks = jsonDecode(blocksSettings.settings);
+    Map<String, dynamic> blocks = jsonDecode(widget.blocks);
     List<dynamic> blockList = blocks['blocks'];
     for (int i = 0; i < blockList.length; i++) {
       _codeControllers.add( CodeController(
