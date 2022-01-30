@@ -26,37 +26,42 @@ Map<int, String> findGolangErrors(String text) {
       } while ((!currentLine.contains(RegExp("`"))) && (i < lines.length - 1));
     }
 
-    if (currentLine.trim().endsWith("}")) {
+    if (currentLine.trim().endsWith("}") ||
+        currentLine.contains(RegExp("}\\s*//"))) {
       indentLevel--;
     }
 
     for (int countOfSpace = 0;
         countOfSpace < currentLine.length;
         countOfSpace++) {
-        if (currentLine[countOfSpace] != " ") {
-            if (countOfSpace / 4 != indentLevel) {
-              errors.addAll({(i + 1): "error in indents"});
-            }
-        break;
+      if (currentLine[countOfSpace] != " ") {
+        if (countOfSpace / 4 != indentLevel) {
+          errors.addAll({(i + 1): "error in indents"});
         }
+        break;
+      }
     }
 
-    if (currentLine.trim().endsWith("{")) {
+    if (currentLine.trim().endsWith("{") ||
+        currentLine.contains(RegExp("{\\s*//"))) {
       indentLevel++;
     }
-    
-    if (currentLine.contains(RegExp("\\s*for\\s*\\("))){
+
+    if (currentLine.contains(RegExp("\\s*for\\s*\\(")) &&
+        (!currentLine.contains(RegExp("[\"']\\s*for\\s*\\([\"']"))) &&
+        (!currentLine.contains(RegExp("//\\s*for\\s*\\(")))) {
       String commandFor = "";
-      while (!currentLine.contains(RegExp("\\)")) && (i < lines.length - 1)){
+      while (!currentLine.contains(RegExp("\\)")) && (i < lines.length - 1)) {
         commandFor += currentLine;
         i++;
         currentLine = lines[i];
       }
       commandFor += currentLine;
-      if (!commandFor.contains(RegExp("for.*\\(.*[;].*[;].*\\)"))){
+      if (!commandFor.contains(RegExp("for.*\\(.*[;].*[;].*\\)"))) {
         errors.addAll({(i + 1): "Missing ';' in for statement"});
       }
-      if (currentLine.trim().endsWith("{")) {
+      if (currentLine.trim().endsWith("{") ||
+          currentLine.contains(RegExp("{\\s*//"))) {
         indentLevel++;
       }
     }

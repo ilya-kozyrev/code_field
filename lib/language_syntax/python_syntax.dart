@@ -38,7 +38,7 @@ Map<int, String> findPythonErrorTabs(String text) {
     previousCountOfSpace = countOfSpace;
 
     if ((lineLength > 2) &&
-        ((lines[i][lineLength - 1] == ":") |
+        ((lines[i][lineLength - 1] == ":") ||
             (lines[i].contains(RegExp(":\\s*#"))))) {
       isPreviousLineContainsColon = true;
     } else {
