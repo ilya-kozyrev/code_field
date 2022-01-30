@@ -42,11 +42,6 @@ Map<int, String> findGolangErrors(String text) {
       }
     }
 
-    if (currentLine.trim().endsWith("{") ||
-        currentLine.contains(RegExp("{\\s*//"))) {
-      indentLevel++;
-    }
-
     if (currentLine.contains(RegExp("\\s*for\\s*\\(")) &&
         (!currentLine.contains(RegExp("[\"']\\s*for\\s*\\([\"']"))) &&
         (!currentLine.contains(RegExp("//\\s*for\\s*\\(")))) {
@@ -60,10 +55,11 @@ Map<int, String> findGolangErrors(String text) {
       if (!commandFor.contains(RegExp("for.*\\(.*[;].*[;].*\\)"))) {
         errors.addAll({(i + 1): "Missing ';' in for statement"});
       }
-      if (currentLine.trim().endsWith("{") ||
-          currentLine.contains(RegExp("{\\s*//"))) {
-        indentLevel++;
-      }
+    }
+
+    if (currentLine.trim().endsWith("{") ||
+        currentLine.contains(RegExp("{\\s*//"))) {
+      indentLevel++;
     }
   }
   return errors;

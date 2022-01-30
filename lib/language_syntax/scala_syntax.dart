@@ -20,7 +20,7 @@ Map<int, String> findScalaErrors(String text) {
     }
 
     if (lines[i].contains(RegExp("\\s*def\\s*"))) {
-      while (!lines[i].contains(RegExp("[^<>!=]*=[^<>!=]*"))) {
+      while (!lines[i].contains(RegExp("[^<>!=]=[^<>!=]*"))) {
         i++;
       }
       if (!lines[i].contains(RegExp("\\(.*\\):"))) {
