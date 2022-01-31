@@ -1,5 +1,5 @@
-// Обработка точек с запятой для цикла for,
-// без учета комментариев и мультистрок.
+/* Search for syntax errors for java and dart : missing parts of identifier, indentation errors,
+for loop errors, missing semicolons. Including comments, strings. */
 
 Map<int, String> findJavaDartErrors(String text) {
   List<String> lines = text.split("\n");
@@ -77,11 +77,18 @@ Map<int, String> findJavaDartErrors(String text) {
       if (!commandFor.contains(RegExp("for.*\\(.*[;].*[;].*\\)"))) {
         errors.addAll({(i + 1): "Missing ';' in for statement"});
       }
-    }
-
-    if (lines[i].trim().endsWith("{") || lines[i].contains(RegExp("{\\s*//"))) {
+      if (lines[i].trim().endsWith("{") ||
+          lines[i].contains(RegExp("{\\s*//"))) {
+        indentLevel++;
+      }
+    } else if (lines[i].trim().endsWith("{") ||
+        lines[i].contains(RegExp("{\\s*//"))) {
       indentLevel++;
     }
+    /* last conditions the same because of rare situation : when algorithm
+    in while loop it loses increase of indentLevel
+    */
+
   }
   return errors;
 }

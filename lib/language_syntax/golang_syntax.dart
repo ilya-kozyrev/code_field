@@ -1,5 +1,6 @@
-// Обработка правильности отступов, точек с запятой для цикла for
-// с учетом комментариев, с учетом строк.
+/* Search for syntax errors for java and dart : indentation errors.
+ Including comments, strings. */
+
 Map<int, String> findGolangErrors(String text) {
   List<String> lines = text.split("\n");
   Map<int, String> errors = {};
@@ -39,21 +40,6 @@ Map<int, String> findGolangErrors(String text) {
           errors.addAll({(i + 1): "error in indents"});
         }
         break;
-      }
-    }
-
-    if (currentLine.contains(RegExp("\\s*for\\s*\\(")) &&
-        (!currentLine.contains(RegExp("[\"']\\s*for\\s*\\([\"']"))) &&
-        (!currentLine.contains(RegExp("//\\s*for\\s*\\(")))) {
-      String commandFor = "";
-      while (!currentLine.contains(RegExp("\\)")) && (i < lines.length - 1)) {
-        commandFor += currentLine;
-        i++;
-        currentLine = lines[i];
-      }
-      commandFor += currentLine;
-      if (!commandFor.contains(RegExp("for.*\\(.*[;].*[;].*\\)"))) {
-        errors.addAll({(i + 1): "Missing ';' in for statement"});
       }
     }
 

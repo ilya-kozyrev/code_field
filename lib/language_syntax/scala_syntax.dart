@@ -1,3 +1,6 @@
+/* Search for syntax errors for scala : missing data type, indentation errors,
+for loop errors. Including comments, strings. */
+
 Map<int, String> findScalaErrors(String text) {
   List<String> lines = text.split("\n");
   Map<int, String> errors = {};
@@ -53,9 +56,11 @@ Map<int, String> findScalaErrors(String text) {
       }
     }
 
-    if (lines[i].trim().endsWith("{")) {
+    if (lines[i].trim().endsWith("{") ||
+        lines[i].contains(RegExp("{\\s*//"))) {
       indentLevelBrace++;
-    } else if (lines[i].trim().endsWith("(")) {
+    } else if (lines[i].trim().endsWith("(") ||
+        lines[i].contains(RegExp("\\(\\s*//"))) {
       indentLevelBracket++;
     }
   }

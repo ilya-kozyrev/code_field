@@ -1,4 +1,6 @@
-// Обработка отступов с учетом комментариев и мультистрок.
+/* Search for syntax errors for python : indentation errors.
+ Including comments, strings. */
+
 Map<int, String> findPythonErrorTabs(String text) {
   List<String> lines = text.split("\n");
   Map<int, String> errors = {};
@@ -25,7 +27,7 @@ Map<int, String> findPythonErrorTabs(String text) {
         if (lines[i].contains(RegExp("\"\"\".*\"\"\""))) break;
         i++;
       } while (
-      (!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
+          (!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
     }
 
     int lineLength = lines[i].length;
