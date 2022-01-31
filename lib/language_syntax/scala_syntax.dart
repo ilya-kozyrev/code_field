@@ -9,7 +9,8 @@ Map<int, String> findScalaErrors(String text) {
       continue;
     }
     if (lines[i].startsWith(RegExp("\\s*/\\*"))) {
-      while ((!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
+      while (
+          (!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
         i++;
         lines[i] = lines[i];
       }
@@ -18,9 +19,10 @@ Map<int, String> findScalaErrors(String text) {
     if (lines[i].contains(RegExp(":\\s*="))) {
       errors.addAll({(i + 1): "Missing type"});
     }
-
+    //TODO:fix def
     if (lines[i].contains(RegExp("\\s*def\\s*"))) {
-      while (!lines[i].contains(RegExp("[^<>!=]=[^<>!=]*"))) {
+      while (!lines[i].contains(RegExp("[^<>!=]=[^<>!=]*")) &&
+          (i < lines.length - 1)) {
         i++;
       }
       if (!lines[i].contains(RegExp("\\(.*\\):"))) {
@@ -34,7 +36,7 @@ Map<int, String> findScalaErrors(String text) {
 
     for (int countOfSpace = 0; countOfSpace < lines[i].length; countOfSpace++) {
       if (lines[i][countOfSpace] != " ") {
-        if (countOfSpace / 2 != (indentLevelBrace + indentLevelBracket)) {
+        if (countOfSpace / 4 != (indentLevelBrace + indentLevelBracket)) {
           print("$countOfSpace $indentLevelBrace $indentLevelBracket");
           errors.addAll({(i + 1): "error in indents"});
         }
@@ -45,6 +47,22 @@ Map<int, String> findScalaErrors(String text) {
     if (lines[i].trim().endsWith(")") &&
         !lines[i].contains(RegExp("\\(.*\\)"))) {
       indentLevelBracket--;
+    }
+
+    // error in for construct
+    if (lines[i].contains(RegExp("\\s*for\\s*\\(")) &&
+        (!lines[i].contains(RegExp("[\"']\\s*for\\s*\\([\"']"))) &&
+        (!lines[i].contains(RegExp("//\\s*for\\s*\\(")))) {
+      String commandFor = "";
+      while (!lines[i].contains(RegExp("\\)")) && (i < lines.length - 1)) {
+        commandFor += lines[i];
+        i++;
+        lines[i] = lines[i];
+      }
+      commandFor += lines[i];
+      if (!commandFor.contains(RegExp("for.*\\(.*<-.*\\)"))) {
+        errors.addAll({(i + 1): "Missing '<-' in for statement"});
+      }
     }
 
     if (lines[i].trim().endsWith("{")) {

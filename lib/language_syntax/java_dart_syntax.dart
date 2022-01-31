@@ -56,7 +56,7 @@ Map<int, String> findJavaDartErrors(String text) {
 
     for (int countOfSpace = 0; countOfSpace < lines[i].length; countOfSpace++) {
       if (lines[i][countOfSpace] != " ") {
-        if (countOfSpace / 2 != indentLevel) {
+        if (countOfSpace / 4 != indentLevel) {
           errors.addAll({(i + 1): "error in indents"});
         }
         break;
