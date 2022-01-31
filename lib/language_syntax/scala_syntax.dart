@@ -19,16 +19,6 @@ Map<int, String> findScalaErrors(String text) {
     if (lines[i].contains(RegExp(":\\s*="))) {
       errors.addAll({(i + 1): "Missing type"});
     }
-    //TODO:fix def
-    if (lines[i].contains(RegExp("\\s*def\\s*"))) {
-      while (!lines[i].contains(RegExp("[^<>!=]=[^<>!=]*")) &&
-          (i < lines.length - 1)) {
-        i++;
-      }
-      if (!lines[i].contains(RegExp("\\(.*\\):"))) {
-        errors.addAll({(i + 1): "Missing ':' in def statement"});
-      }
-    }
 
     if (lines[i].trim().endsWith("}")) {
       indentLevelBrace--;
@@ -37,15 +27,13 @@ Map<int, String> findScalaErrors(String text) {
     for (int countOfSpace = 0; countOfSpace < lines[i].length; countOfSpace++) {
       if (lines[i][countOfSpace] != " ") {
         if (countOfSpace / 4 != (indentLevelBrace + indentLevelBracket)) {
-          print("$countOfSpace $indentLevelBrace $indentLevelBracket");
           errors.addAll({(i + 1): "error in indents"});
         }
         break;
       }
     }
 
-    if (lines[i].trim().endsWith(")") &&
-        !lines[i].contains(RegExp("\\(.*\\)"))) {
+    if (lines[i].trim().endsWith(")") && (indentLevelBracket != 0)) {
       indentLevelBracket--;
     }
 
