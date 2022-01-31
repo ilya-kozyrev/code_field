@@ -18,6 +18,22 @@ Map<int, String> findJavaDartErrors(String text) {
       }
     }
 
+    // ignore multiline String var
+    if (lines[i].contains(RegExp("'''")) &&
+        (!lines[i].contains(RegExp("[\"'].*'''.*[\"']")))) {
+      do {
+        if (lines[i].contains(RegExp("'''.*'''"))) break;
+        i++;
+      } while ((!lines[i].contains(RegExp("'''"))) && (i < lines.length - 1));
+    } else if (lines[i].contains(RegExp("\"\"\"")) &&
+        (!lines[i].contains(RegExp("[\"'].*\"\"\".*[\"']")))) {
+      do {
+        if (lines[i].contains(RegExp("\"\"\".*\"\"\""))) break;
+        i++;
+      } while (
+          (!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
+    }
+
     if (lines[i].trim().endsWith("}") || lines[i].contains(RegExp("}\\s*//"))) {
       indentLevel--;
     }
@@ -47,6 +63,7 @@ Map<int, String> findJavaDartErrors(String text) {
       }
     }
 
+    // error in for construct
     if (lines[i].contains(RegExp("\\s*for\\s*\\(")) &&
         (!lines[i].contains(RegExp("[\"']\\s*for\\s*\\([\"']"))) &&
         (!lines[i].contains(RegExp("//\\s*for\\s*\\(")))) {
