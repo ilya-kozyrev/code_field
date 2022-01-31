@@ -43,7 +43,7 @@ Map<int, String> findJavaDartErrors(String text) {
         !lines[i].contains(RegExp("[\"'].*=.*[\"']")) &&
         !lines[i].contains(";")) {
       String command = lines[i];
-      while (!lines[i].trim().endsWith(";")) {
+      while (!lines[i].trim().endsWith(";") && (i < lines.length - 1)) {
         i++;
         command += lines[i];
       }
