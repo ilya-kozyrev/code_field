@@ -101,7 +101,6 @@ class LineNumberController extends TextEditingController {
         if (k < list.length - 1) children.add(TextSpan(text: "\n"));
       }
     }
-    // Съезжает текстовое поле, если ошибка в последней строке.
     children.add(TextSpan(text: "\n "));
     return TextSpan(children: children);
   }
