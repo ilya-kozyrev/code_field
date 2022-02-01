@@ -15,6 +15,14 @@ Map<int, String> countingBrackets(String text) {
     if (char == "\n") {
       lineNumber++;
       continue;
+    } else if (char == "/" && i < text.length - 1 && text[i + 1] == char) {
+      while (char != "\n" && i < text.length) {
+        i++;
+      }
+    } else if (char == "/" && i < text.length - 1 && text[i + 1] == "*") {
+      while (char != "*" && i < text.length - 1 && text[i + 1] == "/") {
+        i++;
+      }
     } else if ((char == "'") | (char == "\"")) {
       if (openQuote == "") {
         openQuote = char;
