@@ -13,7 +13,7 @@ const BUILT_IN = "append cap close complex copy imag len make new"
     " panic print println real recover delete";
 
 final go = MainMode(
-    nameOfLanguage: "golang",
+    nameOfLanguage: "go",
     refs: {
       "stringsMode": Mode(
         className: "string",

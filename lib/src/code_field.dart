@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 import 'code_controller.dart';
@@ -14,6 +11,7 @@ import '/language_syntax/java_dart_syntax.dart';
 import '/language_syntax/python_syntax.dart';
 import '/language_syntax/scala_syntax.dart';
 import '/language_syntax/golang_syntax.dart';
+import '/constants/constants.dart';
 
 const double LINE_NUMBER_WIDTH = 42;
 const TextAlign LINE_NUMBER_ALIGN = TextAlign.right;
@@ -47,23 +45,23 @@ Map<int, String> getErrorsMap(String text, String language) {
   Map<int, String> errors = {};
   errors.addAll(countingBrackets(text));
   switch (language) {
-    case "java":
-    case "dart":
+    case java:
+    case dart:
       {
         errors.addAll(findJavaDartErrors(text));
         break;
       }
-    case "golang":
+    case go:
       {
         errors.addAll(findGolangErrors(text));
         break;
       }
-    case "python":
+    case python:
       {
         errors.addAll(findPythonErrorTabs(text));
         break;
       }
-    case "scala":
+    case scala:
       {
         errors.addAll(findScalaErrors(text));
         break;
