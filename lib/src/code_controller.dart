@@ -85,46 +85,6 @@ class CodeController extends TextEditingController {
         'language_id'); // TODO: replace string with some generated value for current language id
   }
 
-  /// Replaces the current [selection] by [str]
-  void insertStr(String str) {
-    final sel = selection;
-    text = text.replaceRange(selection.start, selection.end, str);
-    final len = str.length;
-    selection = sel.copyWith(
-      baseOffset: sel.start + len,
-      extentOffset: sel.start + len,
-    );
-  }
-
-  /// Remove the char just before the cursor or the selection
-  void removeChar() {
-    if (selection.start < 1) return;
-    final sel = selection;
-    text = text.replaceRange(selection.start - 1, selection.start, "");
-    selection = sel.copyWith(
-      baseOffset: sel.start - 1,
-      extentOffset: sel.start - 1,
-    );
-  }
-
-  /// Remove the selected text
-  void removeSelection() {
-    final sel = selection;
-    text = text.replaceRange(selection.start, selection.end, "");
-    selection = sel.copyWith(
-      baseOffset: sel.start,
-      extentOffset: sel.start,
-    );
-  }
-
-  /// Remove the selection or last char if the selection is empty
-  void backspace() {
-    if (selection.start < selection.end)
-      removeSelection();
-    else
-      removeChar();
-  }
-
   KeyEventResult onKey(RawKeyEvent event) {
     if (event.isKeyPressed(LogicalKeyboardKey.tab)) {
       text = text.replaceRange(selection.start, selection.end, "\t");
@@ -187,10 +147,6 @@ class CodeController extends TextEditingController {
     
     bool hasTextChanged = newValue.text != super.value.text;
     
-    //Because of this part of code ctrl + z dont't work. But maybe it's important, so please don't delete.
-    // Now fix the textfield for web
-    // if (_webSpaceFix)
-    //   newValue = newValue.copyWith(text: _spacesToMiddleDots(newValue.text));
     if (onChange != null)
       onChange!(
           _webSpaceFix ? _middleDotsToSpaces(newValue.text) : newValue.text);
