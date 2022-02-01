@@ -47,8 +47,8 @@ class LineNumberStyle {
   final double margin;
 
   const LineNumberStyle({
-    this.width = 42.0,
-    this.textAlign = TextAlign.right,
+    this.width = 14.0,
+    this.textAlign = TextAlign.left,
     this.margin = 10.0,
     this.textStyle,
     this.background,
@@ -172,7 +172,7 @@ class CodeFieldState extends State<CodeField> {
     final str = widget.controller.text.split("\n");
     final buf = <String>[];
     for (var k = 0; k < str.length; k++) {
-      buf.add((k + 1).toString());
+      buf.add((k + 1 + widget.controller.stringsNumber).toString());
     }
     _numberController?.text = buf.join("\n");
     // Find longest line
@@ -186,7 +186,7 @@ class CodeFieldState extends State<CodeField> {
   // Wrap the codeField in a horizontal scrollView
   Widget _wrapInScrollView(
       Widget codeField, TextStyle textStyle, double minWidth) {
-    final leftPad = widget.lineNumberStyle.margin / 2;
+    final leftPad = widget.lineNumberStyle.margin / 4;
     final intrinsic = IntrinsicWidth(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -263,7 +263,7 @@ class CodeFieldState extends State<CodeField> {
     );
 
     final numberCol = Container(
-      width: widget.lineNumberStyle.width,
+      width: (((_numberController?.text ?? '\n').split('\n')).last.toString().length) * widget.lineNumberStyle.width,
       padding: EdgeInsets.only(
         left: widget.padding.left,
         right: widget.lineNumberStyle.margin / 2,
@@ -289,7 +289,7 @@ class CodeFieldState extends State<CodeField> {
       cursorColor: cursorColor,
       autocorrect: false,
       enableSuggestions: false,
-      enabled: widget.enabled,
+      enabled: widget.controller.enabled,
       onChanged: widget.onChanged,
       readOnly: widget.readOnly,
     );
@@ -308,6 +308,7 @@ class CodeFieldState extends State<CodeField> {
       ),
     );
     return Container(
+      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
       decoration: widget.decoration,
       color: backgroundCol,
       child: Row(

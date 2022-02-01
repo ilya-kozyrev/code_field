@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:highlight/languages/all.dart';
 
 import 'autoRefactorService.dart';
 import 'code_text_field.dart';
 import 'constants/constants.dart';
 import 'constants/themes.dart';
+
+Future<String> loadBlockSettings() async{
+  return await rootBundle.loadString('assets/settings/blockSettings.json');
+}
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
@@ -103,23 +110,52 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
         ]
       )
     );
-    final codeField = InnerField(
+    Widget codeField(String blocks) => InnerField(
       key: ValueKey("$language - $theme - $reset"),
       language: language!,
       theme: theme!,
+      blocks: blocks
     );
-    return Column(children: [
-      buttons,
-      codeField,
-    ]);
+
+    return FutureBuilder<String>(
+      future: loadBlockSettings(),
+      builder: (context, AsyncSnapshot<String> async) {
+        if (async.connectionState == ConnectionState.active ||
+            async.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (async.connectionState == ConnectionState.done) {
+          if (async.hasError) {
+            return Center(
+              child: Text("ERROR"),
+            );
+          } 
+          else if (async.hasData) {
+            String blocks = async.data ?? '';
+            return Column(
+              children: [
+                buttons,
+                codeField(blocks),
+              ]
+            );
+          }
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    );
   }
 }
 
 class InnerField extends StatefulWidget {
   final String language;
   final String theme;
+  final String blocks;
 
-  const InnerField({Key? key, required this.language, required this.theme})
+  const InnerField({Key? key, required this.language, required this.theme, required this.blocks})
       : super(key: key);
 
   @override
@@ -127,36 +163,69 @@ class InnerField extends StatefulWidget {
 }
 
 class _InnerFieldState extends State<InnerField> {
-  CodeController? _codeController;
+  List<CodeController?> _codeControllers = [];
+  List<int> numberOfLinesBeforeBlock = [];
+
+  _changeNumber(){
+    setState(() { 
+      for (int i = 1; i <  _codeControllers.length; i++) {
+        int numberOfLinesPrevBlock =  _codeControllers[i - 1]!.text.split('\n').length;
+        numberOfLinesBeforeBlock[i] = numberOfLinesBeforeBlock[i-1] + numberOfLinesPrevBlock;
+        _codeControllers[i]!.stringsNumber = numberOfLinesBeforeBlock[i];
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _codeController = CodeController(
-      language: allLanguages[widget.language],
-      theme: THEMES[widget.theme],
-    );
+    numberOfLinesBeforeBlock.add(0);
+    Map<String, dynamic> blocks = jsonDecode(widget.blocks);
+    List<dynamic> blockList = blocks['blocks'];
+    for (int i = 0; i < blockList.length; i++) {
+      _codeControllers.add( CodeController(
+        text: blockList[i]['text'].join('\n'),
+        language: allLanguages[widget.language],
+        theme: THEMES[widget.theme],
+        stringsNumber: numberOfLinesBeforeBlock[i],
+        enabled: blockList[i]['enabled']!.toLowerCase() == 'true'
+      ));
+      numberOfLinesBeforeBlock.add(numberOfLinesBeforeBlock[i] +   _codeControllers[i]!.text.split('\n').length as int);
+      _codeControllers[i]!.addListener(_changeNumber);
+    }
   }
 
   @override
   void dispose() {
-    _codeController?.dispose();
+    for (int i = 0; i <  _codeControllers.length; i++) {
+      _codeControllers[i]?.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    
+
+    Widget blockOfCode(int index){
+      return Container(
+        key: ValueKey("${numberOfLinesBeforeBlock[index]}"),
+        child: CodeField(
+          controller: _codeControllers[index]!,
+          textStyle: const TextStyle(fontFamily: 'SourceCode'),
+        )
+      );
+    }
+
     return Container(
-      color: _codeController!.theme!['root']!.backgroundColor,
+      color: _codeControllers[0]!.theme!['root']!.backgroundColor,
       height: MediaQuery.of(context).size.height / 13 * 12,
       child: Stack(
         children: [
-          SingleChildScrollView(
-            child: CodeField(
-              controller: _codeController!,
-              textStyle: const TextStyle(fontFamily: 'SourceCode'),
-            )
+          ListView.builder(
+            itemCount: _codeControllers.length,
+            itemBuilder: (BuildContext context, int index){
+              return blockOfCode(index);
+            }
           ),
           Align(
             alignment: Alignment.topRight,
@@ -165,7 +234,11 @@ class _InnerFieldState extends State<InnerField> {
               backgroundColor: Colors.indigo[800],
               onPressed: (){
                 setState(() {
-                  _codeController!.text = autoRefactor( _codeController!.text, widget.language);
+                  for (int i = 0; i <  _codeControllers.length; i++) {
+                    if (_codeControllers[i]!.enabled) {
+                      _codeControllers[i]!.text = autoRefactor( _codeControllers[i]!.text, widget.language);
+                    }
+                  }
                 });
               }
             )
