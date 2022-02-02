@@ -15,8 +15,7 @@ Map<int, String> findPythonErrorTabs(String text) {
     }
 
     // ignore multiline String var
-    if (lines[i].contains(RegExp("'''")) &&
-        (!lines[i].contains(RegExp("[\"'].*'''.*[\"']")))) {
+    if (lines[i].contains(RegExp("'''")) && (!lines[i].contains(RegExp("[\"'].*'''.*[\"']")))) {
       do {
         if (lines[i].contains(RegExp("'''.*'''"))) break;
         i++;
@@ -26,8 +25,7 @@ Map<int, String> findPythonErrorTabs(String text) {
       do {
         if (lines[i].contains(RegExp("\"\"\".*\"\"\""))) break;
         i++;
-      } while (
-          (!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
+      } while ((!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
     }
 
     int lineLength = lines[i].length;
@@ -35,16 +33,14 @@ Map<int, String> findPythonErrorTabs(String text) {
       countOfSpace++;
     }
 
-    if (isPreviousLineContainsColon == true &&
-        (previousCountOfSpace + 4) != countOfSpace) {
+    if (isPreviousLineContainsColon == true && (previousCountOfSpace + 4) != countOfSpace) {
       errors.addAll({(i + 1): "error in indents"});
     }
 
     previousCountOfSpace = countOfSpace;
 
     if ((lineLength > 2) &&
-        ((lines[i][lineLength - 1] == ":") ||
-            (lines[i].contains(RegExp(":\\s*#"))))) {
+        ((lines[i][lineLength - 1] == ":") || (lines[i].contains(RegExp(":\\s*#"))))) {
       isPreviousLineContainsColon = true;
     } else {
       isPreviousLineContainsColon = false;

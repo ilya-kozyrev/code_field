@@ -13,8 +13,7 @@ final scala = MainMode(nameOfLanguage: "scala", refs: {
       begin:
           "[^0-9\\n\\t \"'(),.`{}\\[\\]:;][^\\n\\t \"'(),.`{}\\[\\]:;]+|[^0-9\\n\\t \"'(),.`{}\\[\\]:;=]",
       relevance: 0),
-  'typeMode':
-      Mode(className: "type", begin: "\\b[A-Z][A-Za-z0-9_]*", relevance: 0),
+  'typeMode': Mode(className: "type", begin: "\\b[A-Z][A-Za-z0-9_]*", relevance: 0),
   'substringMode': Mode(className: "subst", variants: [
     Mode(begin: "\\\$[A-Za-z0-9_]+"),
     Mode(begin: "\\\${", end: "}"),
@@ -28,9 +27,7 @@ final scala = MainMode(nameOfLanguage: "scala", refs: {
         relevance: 10),
     Mode(begin: "\"", end: "\\n|\"", contains: [BACKSLASH_ESCAPE]),
     Mode(
-        begin: "[a-z]+\"",
-        end: "\\n|\"",
-        contains: [BACKSLASH_ESCAPE, Mode(ref: 'substringMode')]),
+        begin: "[a-z]+\"", end: "\\n|\"", contains: [BACKSLASH_ESCAPE, Mode(ref: 'substringMode')]),
   ]),
   'methodsMode': Mode(
     className: "bullet",

@@ -13,15 +13,13 @@ Map<int, String> findJavaDartErrors(String text) {
       continue;
     }
     if (lines[i].startsWith(RegExp("\\s*/\\*"))) {
-      while (
-          (!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
+      while ((!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
         i++;
       }
     }
 
     // ignore multiline String var
-    if (lines[i].contains(RegExp("'''")) &&
-        (!lines[i].contains(RegExp("[\"'].*'''.*[\"']")))) {
+    if (lines[i].contains(RegExp("'''")) && (!lines[i].contains(RegExp("[\"'].*'''.*[\"']")))) {
       do {
         if (lines[i].contains(RegExp("'''.*'''"))) break;
         i++;
@@ -31,16 +29,13 @@ Map<int, String> findJavaDartErrors(String text) {
       do {
         if (lines[i].contains(RegExp("\"\"\".*\"\"\""))) break;
         i++;
-      } while (
-          (!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
+      } while ((!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
     }
 
-    if ((lines[i].trim().endsWith("}") ||
-            lines[i].contains(RegExp("}\\s*//"))) &&
+    if ((lines[i].trim().endsWith("}") || lines[i].contains(RegExp("}\\s*//"))) &&
         (indentLevelBrace != 0)) {
       indentLevelBrace--;
-    } else if ((lines[i].trim().endsWith(")") ||
-            lines[i].contains(RegExp("\\)\\s*//"))) &&
+    } else if ((lines[i].trim().endsWith(")") || lines[i].contains(RegExp("\\)\\s*//"))) &&
         (indentLevelBracket != 0)) {
       indentLevelBracket--;
     }
@@ -84,15 +79,12 @@ Map<int, String> findJavaDartErrors(String text) {
       if (!commandFor.contains(RegExp("for.*\\(.*[;].*[;].*\\)"))) {
         errors.addAll({(i + 1): "Missing ';' in for statement"});
       }
-      if (lines[i].trim().endsWith("{") ||
-          lines[i].contains(RegExp("{\\s*//"))) {
+      if (lines[i].trim().endsWith("{") || lines[i].contains(RegExp("{\\s*//"))) {
         indentLevelBrace++;
       }
-    } else if (lines[i].trim().endsWith("{") ||
-        lines[i].contains(RegExp("{\\s*//"))) {
+    } else if (lines[i].trim().endsWith("{") || lines[i].contains(RegExp("{\\s*//"))) {
       indentLevelBrace++;
-    } else if (lines[i].trim().endsWith("(") ||
-        lines[i].contains(RegExp("\\(\\s*//"))) {
+    } else if (lines[i].trim().endsWith("(") || lines[i].contains(RegExp("\\(\\s*//"))) {
       indentLevelBracket++;
     }
     /* last conditions the same because of rare situation : when algorithm

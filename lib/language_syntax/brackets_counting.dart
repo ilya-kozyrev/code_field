@@ -34,9 +34,7 @@ Map<int, String> countingBrackets(String text) {
       } else {
         continue;
       }
-      if (((i + 2) < text.length) &&
-          (text[i] == text[i + 1]) &&
-          (text[i + 1] == text[i + 2])) {
+      if (((i + 2) < text.length) && (text[i] == text[i + 1]) && (text[i + 1] == text[i + 2])) {
         i = i + 2;
       }
       if (isCharInString) {
@@ -87,12 +85,9 @@ Map<int, String> countingBrackets(String text) {
   if (stackBrackets.isNotEmpty) {
     if (errors.containsKey(errorsLocations[errorsLocations.length - 1])) {
       errors[errorsLocations[errorsLocations.length - 1]] =
-          errors[errorsLocations[errorsLocations.length - 1]]! +
-              "\n" +
-              "Missing bracket";
+          errors[errorsLocations[errorsLocations.length - 1]]! + "\n" + "Missing bracket";
     } else {
-      errors.addAll(
-          {errorsLocations[errorsLocations.length - 1]: "Missing bracket"});
+      errors.addAll({errorsLocations[errorsLocations.length - 1]: "Missing bracket"});
     }
   }
 

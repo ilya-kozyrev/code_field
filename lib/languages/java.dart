@@ -2,8 +2,7 @@ import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
 import 'main_mode.dart';
 
-const String KEYWORD =
-    "false synchronized abstract private static null if const"
+const String KEYWORD = "false synchronized abstract private static null if const"
     " for true while strictfp finally protected import native final void enum"
     " else break transient catch instanceof super volatile case assert short"
     " package default public try this switch continue throws protected"
@@ -27,10 +26,7 @@ final java = MainMode(
             Mode(begin: "\\w+@", relevance: 0),
             Mode(className: "doctag", begin: "@[A-Za-z]+"),
             PHRASAL_WORDS_MODE,
-            Mode(
-                className: "doctag",
-                begin: "(?:TODO|FIXME|NOTE|BUG|XXX):",
-                relevance: 0)
+            Mode(className: "doctag", begin: "(?:TODO|FIXME|NOTE|BUG|XXX):", relevance: 0)
           ],
           relevance: 0),
       C_LINE_COMMENT_MODE,
@@ -44,10 +40,7 @@ final java = MainMode(
           excludeEnd: true,
           keywords: "class interface",
           illegal: "[:\"\\[\\]]",
-          contains: [
-            Mode(beginKeywords: "extends implements"),
-            UNDERSCORE_TITLE_MODE
-          ]),
+          contains: [Mode(beginKeywords: "extends implements"), UNDERSCORE_TITLE_MODE]),
       Mode(beginKeywords: "new throw return else", relevance: 0),
       Mode(
         className: "bullet",

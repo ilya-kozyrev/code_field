@@ -32,8 +32,7 @@ final go = MainMode(
       ),
       "numbersMode": Mode(className: "number", variants: [
         Mode(
-            begin:
-                "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)[i]",
+            begin: "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)[i]",
             relevance: 1),
         C_NUMBER_MODE
       ]),

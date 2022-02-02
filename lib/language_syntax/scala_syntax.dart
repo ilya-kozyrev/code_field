@@ -12,8 +12,7 @@ Map<int, String> findScalaErrors(String text) {
       continue;
     }
     if (lines[i].startsWith(RegExp("\\s*/\\*"))) {
-      while (
-          (!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
+      while ((!lines[i].contains(RegExp("\\*/\\s*"))) && (i < lines.length - 1)) {
         i++;
         lines[i] = lines[i];
       }
@@ -56,11 +55,9 @@ Map<int, String> findScalaErrors(String text) {
       }
     }
 
-    if (lines[i].trim().endsWith("{") ||
-        lines[i].contains(RegExp("{\\s*//"))) {
+    if (lines[i].trim().endsWith("{") || lines[i].contains(RegExp("{\\s*//"))) {
       indentLevelBrace++;
-    } else if (lines[i].trim().endsWith("(") ||
-        lines[i].contains(RegExp("\\(\\s*//"))) {
+    } else if (lines[i].trim().endsWith("(") || lines[i].contains(RegExp("\\(\\s*//"))) {
       indentLevelBracket++;
     }
   }

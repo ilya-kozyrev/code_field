@@ -20,11 +20,7 @@ final python = MainMode(
             "literal": "False None True",
           },
           illegal: "#",
-          contains: [
-            Mode(ref: 'stringMode'),
-            Mode(ref: 'numberMode'),
-            Mode(ref: 'metaMode')
-          ]),
+          contains: [Mode(ref: 'stringMode'), Mode(ref: 'numberMode'), Mode(ref: 'metaMode')]),
       'simpleMode': Mode(begin: "\\{\\{", relevance: 0),
       'stringMode': Mode(className: "string", contains: [
         BACKSLASH_ESCAPE
@@ -55,25 +51,21 @@ final python = MainMode(
         Mode(begin: "(u|r|ur)\"", end: "\\n|\"", relevance: 10),
         Mode(begin: "(b|br)'", end: "\\n|'"),
         Mode(begin: "(b|br)\"", end: "\\n|\""),
-        Mode(begin: "(fr|rf|f)'", end: "\\n|'", contains: [
-          BACKSLASH_ESCAPE,
-          Mode(ref: 'simpleMode'),
-          Mode(ref: 'substringMode')
-        ]),
-        Mode(begin: "(fr|rf|f)\"", end: "\\n|\"", contains: [
-          BACKSLASH_ESCAPE,
-          Mode(ref: 'simpleMode'),
-          Mode(ref: 'substringMode')
-        ]),
+        Mode(
+            begin: "(fr|rf|f)'",
+            end: "\\n|'",
+            contains: [BACKSLASH_ESCAPE, Mode(ref: 'simpleMode'), Mode(ref: 'substringMode')]),
+        Mode(
+            begin: "(fr|rf|f)\"",
+            end: "\\n|\"",
+            contains: [BACKSLASH_ESCAPE, Mode(ref: 'simpleMode'), Mode(ref: 'substringMode')]),
         APOS_STRING_MODE,
         QUOTE_STRING_MODE
       ]),
       'numberMode': Mode(className: "number", relevance: 0, variants: [
         Mode(begin: "\\b(0b[01]+)[lLjJ]?"),
         Mode(begin: "\\b(0o[0-7]+)[lLjJ]?"),
-        Mode(
-            begin:
-                "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)[lLjJ]?")
+        Mode(begin: "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)[lLjJ]?")
       ]),
       'metaMode': Mode(className: "meta", begin: "^(>>>|\\.\\.\\.) "),
     },
