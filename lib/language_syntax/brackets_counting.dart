@@ -7,7 +7,8 @@ Map<int, String> countingBrackets(String text) {
   List<int> errorsLocations = [];
   bool isCharInString = false;
   bool isShieldingInString = false;
-  String openQuote = "";
+  String openOneLineString = "";
+  String openMultiLineString = "";
 
   for (int i = 0; i < text.length; i++) {
     String char = text[i];
@@ -15,27 +16,38 @@ Map<int, String> countingBrackets(String text) {
     if (char == "\n") {
       lineNumber++;
       continue;
-    } else if (char == "/" && i < text.length - 1 && text[i + 1] == char) {
+    } else if (char == "/" && i < text.length - 1 && text[i + 1] == char && !isCharInString) {
       while (char != "\n" && i < text.length) {
         i++;
       }
-    } else if (char == "/" && i < text.length - 1 && text[i + 1] == "*") {
+    } else if (char == "/" && i < text.length - 1 && text[i + 1] == "*" && !isCharInString) {
       while (char != "*" && i < text.length - 1 && text[i + 1] == "/") {
         i++;
       }
-    } else if ((char == "'") | (char == "\"")) {
-      if (openQuote == "") {
-        openQuote = char;
-      } else if ((openQuote == char) &&
-          isCharInString &&
-          ((i - 2) >= 0) &&
-          ((text[i - 1] != "\\") || (text[i - 2] == "\\"))) {
-        openQuote = "";
+    } else if (((i + 2) < text.length) &&
+        (char == "'" || char == "\"") &&
+        (char == text[i + 1]) &&
+        (text[i + 1] == text[i + 2])) {
+      i = i + 2;
+      if (openMultiLineString == "") {
+        openMultiLineString = char;
+      } else if ((openMultiLineString == char) && isCharInString) {
+        openMultiLineString = "";
       } else {
         continue;
       }
-      if (((i + 2) < text.length) && (text[i] == text[i + 1]) && (text[i + 1] == text[i + 2])) {
-        i = i + 2;
+      if (isCharInString) {
+        isCharInString = false;
+      } else {
+        isCharInString = true;
+      }
+    } else if ((char == "'" || char == "\"") && (i - 1 >= 0) && (text[i - 1] != "\\")) {
+      if (openOneLineString == "") {
+        openOneLineString = char;
+      } else if ((openOneLineString == char) && isCharInString) {
+        openOneLineString = "";
+      } else {
+        continue;
       }
       if (isCharInString) {
         isCharInString = false;
