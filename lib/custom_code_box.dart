@@ -13,6 +13,10 @@ Future<String> loadBlockSettings() async{
   return await rootBundle.loadString('assets/settings/blockSettings.json');
 }
 
+Future<String> loadRefactorSettings() async{
+  return await rootBundle.loadString('assets/settings/autoRefactoringSettings.json');
+}
+
 class CustomCodeBox extends StatefulWidget {
   final String language;
   final String theme;
@@ -110,16 +114,17 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
         ]
       )
     );
-    Widget codeField(String blocks) => InnerField(
+Widget codeField(String blocks, String refactorSettings) => InnerField(
       key: ValueKey("$language - $theme - $reset"),
       language: language!,
       theme: theme!,
-      blocks: blocks
+      blocks: blocks,
+      refactorSettings: refactorSettings,
     );
 
-    return FutureBuilder<String>(
-      future: loadBlockSettings(),
-      builder: (context, AsyncSnapshot<String> async) {
+    return FutureBuilder<List<String>>(
+      future: Future.wait([loadBlockSettings(), loadRefactorSettings()]),
+      builder: (context, AsyncSnapshot<List<String>> async) {
         if (async.connectionState == ConnectionState.active ||
             async.connectionState == ConnectionState.waiting) {
           return Center(
@@ -133,11 +138,12 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
             );
           } 
           else if (async.hasData) {
-            String blocks = async.data ?? '';
+            String blocks = async.data![0];
+            String refactorSettings = async.data![1];
             return Column(
               children: [
                 buttons,
-                codeField(blocks),
+                codeField(blocks, refactorSettings),
               ]
             );
           }
@@ -154,9 +160,10 @@ class InnerField extends StatefulWidget {
   final String language;
   final String theme;
   final String blocks;
+  final String refactorSettings;
 
-  const InnerField({Key? key, required this.language, required this.theme, required this.blocks})
-      : super(key: key);
+  const InnerField({Key? key, required this.language, required this.theme, required this.blocks, 
+                                                  required this.refactorSettings}): super(key: key);
 
   @override
   _InnerFieldState createState() => _InnerFieldState();
@@ -236,7 +243,8 @@ class _InnerFieldState extends State<InnerField> {
                 setState(() {
                   for (int i = 0; i <  _codeControllers.length; i++) {
                     if (_codeControllers[i]!.enabled) {
-                      _codeControllers[i]!.text = autoRefactor( _codeControllers[i]!.text, widget.language);
+                      _codeControllers[i]!.text = autoRefactor( _codeControllers[i]!.text, 
+                                                            widget.language, widget.refactorSettings);
                     }
                   }
                 });
