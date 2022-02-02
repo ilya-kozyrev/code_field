@@ -4,8 +4,6 @@ for loop errors, missing semicolons. Including comments, strings. */
 Map<int, String> findJavaDartErrors(String text) {
   List<String> lines = text.split("\n");
   Map<int, String> errors = {};
-  int indentLevelBrace = 0;
-  int indentLevelBracket = 0;
 
   for (int i = 0; i < lines.length; i++) {
     // ignore comments
@@ -32,14 +30,6 @@ Map<int, String> findJavaDartErrors(String text) {
       } while ((!lines[i].contains(RegExp("\"\"\""))) && (i < lines.length - 1));
     }
 
-    if ((lines[i].trim().endsWith("}") || lines[i].contains(RegExp("}\\s*//"))) &&
-        (indentLevelBrace != 0)) {
-      indentLevelBrace--;
-    } else if ((lines[i].trim().endsWith(")") || lines[i].contains(RegExp("\\)\\s*//"))) &&
-        (indentLevelBracket != 0)) {
-      indentLevelBracket--;
-    }
-
     // errors with identifier and missing semicolon
     if (lines[i].contains(RegExp("[^<>!=]=[^<>!=]*")) &&
         !lines[i].contains(RegExp("[\"'].*=.*[\"']")) &&
@@ -56,15 +46,6 @@ Map<int, String> findJavaDartErrors(String text) {
       errors.addAll({(i + 1): "Missing identifier"});
     }
 
-    for (int countOfSpace = 0; countOfSpace < lines[i].length; countOfSpace++) {
-      if (lines[i][countOfSpace] != " ") {
-        if (countOfSpace / 4 != indentLevelBrace + indentLevelBracket) {
-          errors.addAll({(i + 1): "error in indents"});
-        }
-        break;
-      }
-    }
-
     // error in for construct
     if (lines[i].contains(RegExp("\\s*for\\s*\\(")) &&
         (!lines[i].contains(RegExp("[\"']\\s*for\\s*\\([\"']"))) &&
@@ -79,18 +60,7 @@ Map<int, String> findJavaDartErrors(String text) {
       if (!commandFor.contains(RegExp("for.*\\(.*[;].*[;].*\\)"))) {
         errors.addAll({(i + 1): "Missing ';' in for statement"});
       }
-      if (lines[i].trim().endsWith("{") || lines[i].contains(RegExp("{\\s*//"))) {
-        indentLevelBrace++;
-      }
-    } else if (lines[i].trim().endsWith("{") || lines[i].contains(RegExp("{\\s*//"))) {
-      indentLevelBrace++;
-    } else if (lines[i].trim().endsWith("(") || lines[i].contains(RegExp("\\(\\s*//"))) {
-      indentLevelBracket++;
     }
-    /* last conditions the same because of rare situation : when algorithm
-    in while loop it loses increase of indentLevel
-    */
-
   }
   return errors;
 }
