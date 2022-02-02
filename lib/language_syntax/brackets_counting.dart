@@ -17,12 +17,15 @@ Map<int, String> countingBrackets(String text) {
       lineNumber++;
       continue;
     } else if (char == "/" && i < text.length - 1 && text[i + 1] == char && !isCharInString) {
-      while (char != "\n" && i < text.length) {
+      while (char != "\n" && i < text.length - 1) {
         i++;
+        char = text[i];
       }
+      lineNumber++;
     } else if (char == "/" && i < text.length - 1 && text[i + 1] == "*" && !isCharInString) {
       while (char != "*" && i < text.length - 1 && text[i + 1] == "/") {
         i++;
+        char = text[i];
       }
     } else if (((i + 2) < text.length) &&
         (char == "'" || char == "\"") &&
@@ -41,7 +44,12 @@ Map<int, String> countingBrackets(String text) {
       } else {
         isCharInString = true;
       }
-    } else if ((char == "'" || char == "\"") && (i - 1 >= 0) && (text[i - 1] != "\\")) {
+    } else if (char == "'" || char == "\"") {
+      if (i - 1 >= 0 && (text[i - 1] == "\\")) {
+        if ((i - 2 >= 0) && (text[i - 2] != "\\")) {
+          continue;
+        }
+      }
       if (openOneLineString == "") {
         openOneLineString = char;
       } else if ((openOneLineString == char) && isCharInString) {
