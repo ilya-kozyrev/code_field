@@ -20,7 +20,7 @@ class SuggestionGenerator {
   }
 
   Future<Map<String, dynamic>> getConfig() async {
-    String config = await rootBundle.loadString('dart.json');
+    String config = await rootBundle.loadString('keywords/dart.json');
     Map<String, dynamic> jsonConfig = jsonDecode(config);
     return jsonConfig;
   }
