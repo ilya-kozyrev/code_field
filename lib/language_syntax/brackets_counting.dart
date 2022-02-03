@@ -44,7 +44,7 @@ Map<int, String> countingBrackets(String text) {
       } else {
         isCharInString = true;
       }
-    } else if (char == "'" || char == "\"") {
+    } else if ((char == "'" || char == "\"") && openMultiLineString == "") {
       if (i - 1 >= 0 && (text[i - 1] == "\\")) {
         if ((i - 2 >= 0) && (text[i - 2] != "\\")) {
           continue;
