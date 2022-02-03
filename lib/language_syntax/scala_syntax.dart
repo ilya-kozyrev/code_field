@@ -1,4 +1,4 @@
-/* Search for syntax errors for scala : missing data type, indentation errors,
+/* Search for syntax errors for scala : missing data type,
 for loop errors. Including comments, strings. */
 
 Map<int, String> findScalaErrors(String text) {

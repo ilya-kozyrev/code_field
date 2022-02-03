@@ -1,4 +1,4 @@
-/* Search for syntax errors for java and dart : missing parts of identifier, indentation errors,
+/* Search for syntax errors for java and dart : missing parts of identifier,
 for loop errors, missing semicolons. Including comments, strings. */
 
 Map<int, String> findJavaDartErrors(String text) {
