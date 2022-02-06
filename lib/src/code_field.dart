@@ -62,9 +62,6 @@ class CodeField extends StatefulWidget {
   /// {@macro flutter.widgets.textField.maxLInes}
   final int? maxLines;
 
-  /// {@macro flutter.widgets.textField.expands}
-  final bool expands;
-
   /// Whether overflowing lines should wrap around or make the field scrollable horizontally
   final bool wrap;
 
@@ -83,14 +80,8 @@ class CodeField extends StatefulWidget {
   /// A way to replace specific line numbers by a custom TextSpan
   final TextSpan Function(int, TextStyle?)? lineNumberBuilder;
 
-  /// {@macro flutter.widgets.textField.enabled}
-  final bool? enabled;
-
   /// {@macro flutter.widgets.editableText.onChanged}
   final void Function(String)? onChanged;
-
-  /// {@macro flutter.widgets.editableText.readOnly}
-  final bool readOnly;
 
   final Color? background;
   final EdgeInsets padding;
@@ -103,15 +94,12 @@ class CodeField extends StatefulWidget {
     required this.controller,
     this.minLines,
     this.maxLines,
-    this.expands = false,
-    this.wrap = false,
+    required this.wrap,
     this.background,
     this.decoration,
     this.textStyle,
-    this.padding = const EdgeInsets.symmetric(),
-    this.lineNumberStyle = const LineNumberStyle(),
-    this.enabled,
-    this.readOnly = false,
+    required this.padding,
+    required this.lineNumberStyle,
     this.cursorColor,
     this.textSelectionTheme,
     this.lineNumberBuilder,
@@ -202,7 +190,7 @@ class CodeFieldState extends State<CodeField> {
               padding: const EdgeInsets.only(right: 16.0),
             ), // Add extra padding
           ),
-          widget.expands ? Expanded(child: codeField) : codeField,
+          codeField,
         ],
       ),
     );
@@ -254,7 +242,6 @@ class CodeFieldState extends State<CodeField> {
       enabled: false,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
-      expands: widget.expands,
       scrollController: _numberScroll,
       decoration: InputDecoration(
         disabledBorder: InputBorder.none,
@@ -279,7 +266,6 @@ class CodeFieldState extends State<CodeField> {
       controller: widget.controller,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
-      expands: widget.expands,
       scrollController: _codeScroll,
       decoration: InputDecoration(
         disabledBorder: InputBorder.none,
@@ -291,7 +277,6 @@ class CodeFieldState extends State<CodeField> {
       enableSuggestions: false,
       enabled: widget.controller.enabled,
       onChanged: widget.onChanged,
-      readOnly: widget.readOnly,
     );
 
     final codeCol = Theme(
