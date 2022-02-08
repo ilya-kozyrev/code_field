@@ -53,7 +53,7 @@ class SuggestionGenerator {
       String text, int cursorPosition) {
     this.cursorPosition = cursorPosition;
     this.text = text;
-    String prefix = _getCurrentWordPrefix();
+    String prefix = getCurrentWordPrefix();
     if (prefix.isEmpty) {
       return HashMap();
     }
@@ -66,7 +66,7 @@ class SuggestionGenerator {
   }
 
   /// Returns the prefix of an identifier or a keyword that is pointed to by the cursor
-  String _getCurrentWordPrefix() {
+  String getCurrentWordPrefix() {
     String prefix = '';
     int characterPosition = cursorPosition - 1;
     while (characterPosition >= 0 &&
@@ -122,9 +122,9 @@ class SuggestionGenerator {
     return keywords;
   }
 
-  /// Returns text without word pointed to by the cursor
+  /// Returns text without the word pointed to by the cursor
   String _excludeCurrentWord() {
-    return text.replaceRange(cursorPosition - _getCurrentWordPrefix().length,
+    return text.replaceRange(cursorPosition - getCurrentWordPrefix().length,
         cursorPosition + _getCurrentWordSuffix().length, "");
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:code_text_field/src/autocomplete/popup_controller.dart';
 import 'package:code_text_field/src/autocomplete/suggestion_generator.dart';
 import 'package:code_text_field/src/code_modifier.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -49,7 +50,9 @@ class CodeController extends TextEditingController {
   final String languageId = _genId();
   final styleList = <TextStyle>[];
   final modifierMap = <String, CodeModifier>{};
+  bool isPopupShown = false;
   RegExp? styleRegExp;
+  late PopupController popupController;
   SuggestionGenerator? suggestionGenerator;
 
   CodeController({
@@ -80,6 +83,7 @@ class CodeController extends TextEditingController {
     });
     suggestionGenerator = SuggestionGenerator(
         'language_id'); // TODO: replace string with some generated value for current language id
+    this.popupController = PopupController(onCompletionSelected: this.insertSelectedWord);
   }
 
   /// Replaces the current [selection] by [str]
@@ -127,7 +131,35 @@ class CodeController extends TextEditingController {
       text = text.replaceRange(selection.start, selection.end, "\t");
       return KeyEventResult.handled;
     }
+    if (popupController.isPopupShown) {
+      if (event.isKeyPressed(LogicalKeyboardKey.arrowUp)) {
+        popupController.scrollByArrow(ScrollDirection.up);
+        return KeyEventResult.handled;
+      }
+      if (event.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
+        popupController.scrollByArrow(ScrollDirection.down);
+        return KeyEventResult.handled;
+      }
+      if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
+        insertSelectedWord();
+        return KeyEventResult.handled;
+      }
+    }
     return KeyEventResult.ignored;
+  }
+
+  /// Inserts the word selected from the list of completions
+  void insertSelectedWord() {
+    final previousSelection = selection;
+    String selectedWord = popupController.getSelectedWord();
+    int startPosition = selection.baseOffset -
+        suggestionGenerator!.getCurrentWordPrefix().length;
+    text = text.replaceRange(startPosition, selection.baseOffset, selectedWord);
+    selection = previousSelection.copyWith(
+      baseOffset: startPosition + selectedWord.length,
+      extentOffset: startPosition + selectedWord.length,
+    );
+    popupController.hide();
   }
 
   /// See webSpaceFix
@@ -181,9 +213,10 @@ class CodeController extends TextEditingController {
         );
       }
     }
-    
+
     bool hasTextChanged = newValue.text != super.value.text;
-    
+    bool hasSelectionChanged = (newValue.selection != super.value.selection);
+
     //Because of this part of code ctrl + z dont't work. But maybe it's important, so please don't delete.
     // Now fix the textfield for web
     // if (_webSpaceFix)
@@ -192,7 +225,11 @@ class CodeController extends TextEditingController {
       onChange!(
           _webSpaceFix ? _middleDotsToSpaces(newValue.text) : newValue.text);
     super.value = newValue;
-    if (hasTextChanged) generateSuggestions();
+    if (hasTextChanged) {
+      generateSuggestions();
+    } else if (hasSelectionChanged) {
+      popupController.hide();
+    }
   }
 
   TextSpan _processPatterns(String text, TextStyle? style) {
@@ -262,7 +299,12 @@ class CodeController extends TextEditingController {
   }
 
   void generateSuggestions() {
-    suggestionGenerator!.getSuggestions(text, selection.start);
+    List<String> suggestions =
+        suggestionGenerator!.getSuggestions(text, selection.start);
+    if (suggestions.isNotEmpty)
+      popupController.show(suggestions);
+    else
+      popupController.hide();
   }
 
   @override
