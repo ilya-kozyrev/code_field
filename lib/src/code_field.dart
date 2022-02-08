@@ -2,10 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:code_text_field/src/autocomplete/popup.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
 import 'code_controller.dart';
@@ -232,7 +229,7 @@ class CodeFieldState extends State<CodeField> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       double width = _codeFieldKey.currentContext!.size!.width;
       double height = _codeFieldKey.currentContext!.size!.height;
-      windowSize = Size(width - widget.lineNumberStyle.width, height);
+      windowSize = Size(width - LINE_NUMBER_WIDTH, height);
     });
     _onTextChanged();
   }
@@ -260,7 +257,7 @@ class CodeFieldState extends State<CodeField> {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         double width = _codeFieldKey.currentContext!.size!.width;
         double height = _codeFieldKey.currentContext!.size!.height;
-        windowSize = Size(width - widget.lineNumberStyle.width, height);
+        windowSize = Size(width - LINE_NUMBER_WIDTH, height);
       });
     });
   }
@@ -461,7 +458,7 @@ class CodeFieldState extends State<CodeField> {
       cursorX = max(
           caretOffset.dx +
               widget.padding.left +
-              widget.lineNumberStyle.margin / 2 -
+              LINE_NUMBER_MARGIN / 2 -
               _horizontalCodeScroll!.offset,
           0);
       cursorY = max(

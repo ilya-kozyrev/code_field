@@ -299,8 +299,7 @@ class CodeController extends TextEditingController {
   }
 
   void generateSuggestions() {
-    List<String> suggestions =
-        suggestionGenerator!.getSuggestions(text, selection.start);
+    List<String> suggestions = suggestionGenerator!.getSuggestions(text, selection.start)['local']!;
     if (suggestions.isNotEmpty)
       popupController.show(suggestions);
     else
