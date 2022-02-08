@@ -149,39 +149,38 @@ class CodeEditorState extends State<CodeEditor> {
       );
     }
 
-    return Container(
-      color: widget.background ?? codeControllers[0]!.theme!['root']!.backgroundColor,
-      height: MediaQuery.of(context).size.height / 13 * 12,
-      child: Stack(
-        children: [
-          ListView.builder(
+    return Stack(
+      children: [
+        Container( 
+          color: widget.background ?? codeControllers[0]!.theme!['root']!.backgroundColor,
+          child: ListView.builder(
             itemCount: codeControllers.length,
             itemBuilder: (BuildContext context, int index){
               return blockOfCode(index);
             }
-          ),
-          Visibility(
-            visible: widget.autoRefactoringButton,
-            child: Align(
-              alignment: Alignment.topRight,
-              child: FloatingActionButton(
-                child: const Icon(Icons.format_align_left_outlined),
-                backgroundColor: Colors.indigo[800],
-                onPressed: (){
-                  setState(() {
-                    for (int i = 0; i <  codeControllers.length; i++) {
-                      if (codeControllers[i]!.enabled) {
-                        codeControllers[i]!.text = autoRefactor( codeControllers[i]!.text, 
-                                                              widget.language, widget.refactorSettings);
-                      }
+          )
+        ),
+        Visibility(
+          visible: widget.autoRefactoringButton,
+          child: Align(
+            alignment: Alignment.topRight,
+            child: FloatingActionButton(
+              child: const Icon(Icons.format_align_left_outlined),
+              backgroundColor: Colors.indigo[800],
+              onPressed: (){
+                setState(() {
+                  for (int i = 0; i <  codeControllers.length; i++) {
+                    if (codeControllers[i]!.enabled) {
+                      codeControllers[i]!.text = autoRefactor( codeControllers[i]!.text, 
+                                                            widget.language, widget.refactorSettings);
                     }
-                  });
-                }
-              )
+                  }
+                });
+              }
             )
           )
-        ]
-      )
+        )
+      ]
     );
   }
 }

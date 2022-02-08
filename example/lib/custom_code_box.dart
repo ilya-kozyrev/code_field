@@ -93,23 +93,6 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
       }, 
     );
 
-    final buttons = Container (
-      height: MediaQuery.of(context).size.height/13,
-      color: Colors.deepPurple[900],
-      child: Row(
-        children: [
-        Spacer(flex: 2),
-        Text('Code editor', style: TextStyle(fontSize: 28, color: Colors.white)),
-        Spacer(flex: 35),
-        codeDropdown,
-        Spacer(),
-        themeDropdown,
-        Spacer(),
-        resetButton
-        ]
-      )
-    );
-
     Widget codeField(String blocks, String refactorSettings) => CodeEditor(
       key: ValueKey("$language - $theme - $reset"),
       language: language!,
@@ -131,11 +114,18 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
           else if (async.hasData) {
             String blocks = async.data![0];
             String refactorSettings = async.data![1];
-            return Column(
-              children: [
-                buttons,
-                codeField(blocks, refactorSettings),
-              ]
+            return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Colors.deepPurple[900],
+                title: Text('Code editor', style: TextStyle(color: Colors.white)),
+                actions: [
+                  codeDropdown,
+                  SizedBox(width: MediaQuery.of(context).size.width/60),
+                  themeDropdown,
+                  resetButton
+                ],
+              ),
+              body: codeField(blocks, refactorSettings),
             );
           }
         }

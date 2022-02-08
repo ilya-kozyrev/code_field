@@ -21,4 +21,5 @@ flutter:
   assets:
     - assets/settings/autoRefactoringSettings.json
     - assets/settings/blockSettings.json
+    - assets/keywords/
   
