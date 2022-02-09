@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -85,7 +84,6 @@ class CodeField extends StatefulWidget {
 
   final Color? background;
   final EdgeInsets padding;
-  final Decoration? decoration;
   final TextSelectionThemeData? textSelectionTheme;
   final FocusNode? focusNode;
 
@@ -96,7 +94,6 @@ class CodeField extends StatefulWidget {
     this.maxLines,
     required this.wrap,
     this.background,
-    this.decoration,
     this.textStyle,
     required this.padding,
     required this.lineNumberStyle,
@@ -172,27 +169,10 @@ class CodeFieldState extends State<CodeField> {
   }
 
   // Wrap the codeField in a horizontal scrollView
-  Widget _wrapInScrollView(
-      Widget codeField, TextStyle textStyle, double minWidth) {
+  Widget _wrapInScrollView(Widget codeField) {
     final leftPad = widget.lineNumberStyle.margin / 4;
     final intrinsic = IntrinsicWidth(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 0.0,
-              minWidth: max(minWidth - leftPad, 0.0),
-            ),
-            child: Padding(
-              child: Text(longestLine, style: textStyle),
-              padding: const EdgeInsets.only(right: 16.0),
-            ), // Add extra padding
-          ),
-          codeField,
-        ],
-      ),
+      child: codeField
     );
 
     return SingleChildScrollView(
@@ -209,18 +189,13 @@ class CodeFieldState extends State<CodeField> {
   Widget build(BuildContext context) {
     // Default color scheme
     const ROOT_KEY = 'root';
-    final defaultBg = Colors.grey.shade900;
     final defaultText = Colors.grey.shade200;
-
     final theme = widget.controller.theme;
-    Color? backgroundCol =
-        widget.background ?? theme?[ROOT_KEY]?.backgroundColor ?? defaultBg;
-    if (widget.decoration != null) {
-      backgroundCol = null;
-    }
+    
     TextStyle textStyle = widget.textStyle ?? TextStyle();
+    final textColor = textStyle.color ?? theme?[ROOT_KEY]?.color ?? defaultText;
     textStyle = textStyle.copyWith(
-      color: textStyle.color ?? theme?[ROOT_KEY]?.color ?? defaultText,
+      color: widget.controller.enabled ? textColor : textColor.withOpacity(0.4),
       fontSize: textStyle.fontSize ?? 16.0,
     );
     TextStyle numberTextStyle = widget.lineNumberStyle.textStyle ?? TextStyle();
@@ -244,13 +219,15 @@ class CodeFieldState extends State<CodeField> {
       maxLines: widget.maxLines,
       scrollController: _numberScroll,
       decoration: InputDecoration(
+        isDense: true,  
         disabledBorder: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(vertical: 4),
       ),
       textAlign: widget.lineNumberStyle.textAlign,
     );
 
     final numberCol = Container(
-      width: (((_numberController?.text ?? '\n').split('\n')).last.toString().length) * widget.lineNumberStyle.width,
+      width: (((_numberController?.text ?? '\n').split('\n')).last.toString().length + 1) * widget.lineNumberStyle.width,
       padding: EdgeInsets.only(
         left: widget.padding.left,
         right: widget.lineNumberStyle.margin / 2,
@@ -268,9 +245,12 @@ class CodeFieldState extends State<CodeField> {
       maxLines: widget.maxLines,
       scrollController: _codeScroll,
       decoration: InputDecoration(
+        isDense: true,  
+        enabledBorder: InputBorder.none,
         disabledBorder: InputBorder.none,
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
+        contentPadding: EdgeInsets.symmetric(vertical: 4),
       ),
       cursorColor: cursorColor,
       autocorrect: false,
@@ -283,19 +263,11 @@ class CodeFieldState extends State<CodeField> {
       data: Theme.of(context).copyWith(
         textSelectionTheme: widget.textSelectionTheme,
       ),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          // Control horizontal scrolling
-          return widget.wrap
-              ? codeField
-              : _wrapInScrollView(codeField, textStyle, constraints.maxWidth);
-        },
-      ),
+      child: widget.wrap ? codeField : _wrapInScrollView(codeField)
     );
+
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-      decoration: widget.decoration,
-      color: backgroundCol,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

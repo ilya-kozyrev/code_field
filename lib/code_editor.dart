@@ -132,12 +132,11 @@ class CodeEditorState extends State<CodeEditor> {
         key: ValueKey("${numberOfLinesBeforeBlock[index]}"),
         child: CodeField(
           controller: codeControllers[index]!,
-          textStyle: widget.textStyle ?? const TextStyle(fontFamily: 'SourceCode'),
+          textStyle: widget.textStyle,
           minLines: widget.minLines,
           maxLines: widget.maxLines,
           wrap: widget.wrap,
           background: widget.background,
-          decoration: widget.decoration,
           padding: widget.padding,
           lineNumberStyle: widget.lineNumberStyle,
           lineNumberBuilder: widget.lineNumberBuilder,
@@ -152,7 +151,10 @@ class CodeEditorState extends State<CodeEditor> {
     return Stack(
       children: [
         Container( 
-          color: widget.background ?? codeControllers[0]!.theme!['root']!.backgroundColor,
+          color: widget.decoration == null ? (widget.background ?? 
+                                      codeControllers[0]?.theme?['root']?.backgroundColor ?? Colors.grey.shade900) : null,
+          decoration: widget.decoration,
+          padding: EdgeInsets.symmetric(vertical: 10),
           child: ListView.builder(
             itemCount: codeControllers.length,
             itemBuilder: (BuildContext context, int index){
