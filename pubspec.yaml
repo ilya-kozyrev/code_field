@@ -14,6 +14,7 @@ dependencies:
   highlight: ^0.7.0
   flutter_highlight: ^0.7.0
   autotrie: ^2.0.0
+  scrollable_positioned_list: ^0.2.3
   tuple: ^2.0.0
 
 dev_dependencies:

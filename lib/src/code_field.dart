@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:code_text_field/src/autocomplete/popup.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
+
 import './code_controller.dart';
 
 class LineNumberController extends TextEditingController {
@@ -74,7 +77,7 @@ class CodeField extends StatefulWidget {
   final Color? cursorColor;
 
   /// {@macro flutter.widgets.textField.textStyle}
-  final TextStyle? textStyle;
+  late TextStyle? textStyle;
 
   /// A way to replace specific line numbers by a custom TextSpan
   final TextSpan Function(int, TextStyle?)? lineNumberBuilder;
@@ -87,7 +90,9 @@ class CodeField extends StatefulWidget {
   final TextSelectionThemeData? textSelectionTheme;
   final FocusNode? focusNode;
 
-  const CodeField({
+  final double defaultFontSize = 16.0;
+
+  CodeField({
     Key? key,
     required this.controller,
     this.minLines,
@@ -113,12 +118,21 @@ class CodeFieldState extends State<CodeField> {
   LinkedScrollControllerGroup? _controllers;
   ScrollController? _numberScroll;
   ScrollController? _codeScroll;
+  ScrollController? _horizontalCodeScroll;
   LineNumberController? _numberController;
+  GlobalKey _codeFieldKey = GlobalKey();
+
+  double cursorX = 0.0;
+  double cursorY = 0.0;
+  double painterWidth = 0.0;
+  double painterHeight = 0.0;
+
   //
   StreamSubscription<bool>? _keyboardVisibilitySubscription;
   FocusNode? _focusNode;
   String? lines;
   String longestLine = "";
+  late Size windowSize;
 
   @override
   void initState() {
@@ -128,9 +142,17 @@ class CodeFieldState extends State<CodeField> {
     _codeScroll = _controllers?.addAndGet();
     _numberController = LineNumberController(widget.lineNumberBuilder);
     widget.controller.addListener(_onTextChanged);
+    widget.controller.addListener(() {
+      _updateCursorOffset(widget.controller.text);
+    });
+    _horizontalCodeScroll = ScrollController(initialScrollOffset: 0.0);
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode!.attach(context, onKey: _onKey);
-
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      double width = _codeFieldKey.currentContext!.size!.width;
+      double height = _codeFieldKey.currentContext!.size!.height;
+      windowSize = Size(width - widget.lineNumberStyle.width, height);
+    });
     _onTextChanged();
   }
 
@@ -141,15 +163,25 @@ class CodeFieldState extends State<CodeField> {
   @override
   void dispose() {
     widget.controller.removeListener(_onTextChanged);
+    widget.controller.removeListener(() {
+      _updateCursorOffset(widget.controller.text);
+    });
     _numberScroll?.dispose();
     _codeScroll?.dispose();
+    _horizontalCodeScroll?.dispose();
     _numberController?.dispose();
     _keyboardVisibilitySubscription?.cancel();
     super.dispose();
   }
 
   void rebuild() {
-    setState(() {});
+    setState(() {
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        double width = _codeFieldKey.currentContext!.size!.width;
+        double height = _codeFieldKey.currentContext!.size!.height;
+        windowSize = Size(width - widget.lineNumberStyle.width, height);
+      });
+    });
   }
 
   void _onTextChanged() {
@@ -165,7 +197,7 @@ class CodeFieldState extends State<CodeField> {
     widget.controller.text.split("\n").forEach((line) {
       if (line.length > longestLine.length) longestLine = line;
     });
-    setState(() {});
+    rebuild();
   }
 
   // Wrap the codeField in a horizontal scrollView
@@ -181,6 +213,7 @@ class CodeFieldState extends State<CodeField> {
         right: widget.padding.right,
       ),
       scrollDirection: Axis.horizontal,
+      controller: _horizontalCodeScroll,
       child: intrinsic,
     );
   }
@@ -196,8 +229,9 @@ class CodeFieldState extends State<CodeField> {
     final textColor = textStyle.color ?? theme?[ROOT_KEY]?.color ?? defaultText;
     textStyle = textStyle.copyWith(
       color: widget.controller.enabled ? textColor : textColor.withOpacity(0.4),
-      fontSize: textStyle.fontSize ?? 16.0,
+      fontSize: textStyle.fontSize ?? this.widget.defaultFontSize
     );
+    this.widget.textStyle = textStyle;
     TextStyle numberTextStyle = widget.lineNumberStyle.textStyle ?? TextStyle();
     final numberColor =
         (theme?[ROOT_KEY]?.color ?? defaultText).withOpacity(0.7);
@@ -244,6 +278,7 @@ class CodeFieldState extends State<CodeField> {
       minLines: widget.minLines,
       maxLines: widget.maxLines,
       scrollController: _codeScroll,
+      expands: widget.expands,
       decoration: InputDecoration(
         isDense: true,  
         enabledBorder: InputBorder.none,
@@ -259,7 +294,7 @@ class CodeFieldState extends State<CodeField> {
       onChanged: widget.onChanged,
     );
 
-    final codeCol = Theme(
+    final editingField = Theme(
       data: Theme.of(context).copyWith(
         textSelectionTheme: widget.textSelectionTheme,
       ),
@@ -268,13 +303,64 @@ class CodeFieldState extends State<CodeField> {
 
     return Container(
       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+      key: _codeFieldKey,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           numberCol,
-          Expanded(child: codeCol),
+          Expanded(
+            child: Stack(
+              children: [
+                editingField,
+                widget.controller.popupController.isPopupShown
+                    ? Popup(
+                        row: cursorY,
+                        column: cursorX,
+                        controller: widget.controller.popupController,
+                        editingWindowSize: windowSize,
+                        style: textStyle,
+                        backgroundColor: backgroundCol,
+                        parentFocusNode: _focusNode!,
+                      )
+                    : Container(),
+              ],
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  void _updateCursorOffset(String text) {
+    TextPainter painter = TextPainter(
+      textDirection: TextDirection.ltr,
+      text: TextSpan(text: text, style: widget.textStyle),
+    );
+    painter.layout();
+    TextPosition cursorTextPosition = widget.controller.selection.base;
+    Rect caretPrototype = Rect.fromLTWH(0.0, 0.0, 0.0, 0.0);
+    Offset caretOffset =
+        painter.getOffsetForCaret(cursorTextPosition, caretPrototype);
+    double caretHeight = (widget.controller.selection.base.offset > 0)
+        ? painter.getFullHeightForCaret(cursorTextPosition, caretPrototype)!
+        : 0;
+
+    setState(() {
+      cursorX = max(
+          caretOffset.dx +
+              widget.padding.left +
+              widget.lineNumberStyle.margin / 2 -
+              _horizontalCodeScroll!.offset,
+          0);
+      cursorY = max(
+          caretOffset.dy +
+              caretHeight +
+              16 +
+              widget.padding.top -
+              _codeScroll!.offset,
+          0);
+      painterWidth = painter.width;
+      painterHeight = painter.height;
+    });
   }
 }
