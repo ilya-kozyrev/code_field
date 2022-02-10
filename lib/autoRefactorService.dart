@@ -5,6 +5,7 @@ import 'package:tuple/tuple.dart';
 
 import 'constants/constants.dart';
 
+
 String autoRefactor(String text, String language, String refactorSettings){
   String refactorText = "";
   Map<String, dynamic> settings = jsonDecode(refactorSettings);

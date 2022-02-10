@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:code_text_field/code_editor.dart';
 import 'package:code_text_field/constants/constants.dart';
 
-Future<String> loadBlockSettings() async{
-  return await rootBundle.loadString('assets/settings/blockSettings.json');
-}
-
-Future<String> loadRefactorSettings() async{
-  return await rootBundle.loadString('assets/settings/autoRefactoringSettings.json');
-}
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
   final String theme;
+  final String blocks;
+  final String refactorSettings;
 
-  const CustomCodeBox({Key? key, required this.language, required this.theme})
+  const CustomCodeBox({Key? key, required this.language, required this.theme, 
+                                                              required this.blocks, required this.refactorSettings})
       : super(key: key);
 
   @override
@@ -102,37 +97,18 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
       autoRefactoringButton: true,
     );
 
-    return FutureBuilder<List<String>>(
-      future: Future.wait([loadBlockSettings(), loadRefactorSettings()]),
-      builder: (context, AsyncSnapshot<List<String>> async) {
-        if (async.connectionState == ConnectionState.done) {
-          if (async.hasError) {
-            return Center(
-              child: Text("ERROR"),
-            );
-          } 
-          else if (async.hasData) {
-            String blocks = async.data![0];
-            String refactorSettings = async.data![1];
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.deepPurple[900],
-                title: Text('Code editor', style: TextStyle(color: Colors.white)),
-                actions: [
-                  codeDropdown,
-                  SizedBox(width: MediaQuery.of(context).size.width/60),
-                  themeDropdown,
-                  resetButton
-                ],
-              ),
-              body: codeField(blocks, refactorSettings),
-            );
-          }
-        }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      }
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.deepPurple[900],
+        title: Text('Code editor', style: TextStyle(color: Colors.white)),
+        actions: [
+          codeDropdown,
+          SizedBox(width: MediaQuery.of(context).size.width/60),
+          themeDropdown,
+          resetButton
+        ],
+      ),
+      body: codeField(widget.blocks, widget.refactorSettings),
     );
   }
 }
