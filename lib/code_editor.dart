@@ -126,6 +126,8 @@ class CodeEditorState extends State<CodeEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final Color? backgroundColor = widget.decoration == null ? (widget.background ?? 
+                                      codeControllers[0]?.theme?['root']?.backgroundColor ?? Colors.grey.shade900) : null;
 
     Widget blockOfCode(int index){
       return Container(
@@ -136,7 +138,7 @@ class CodeEditorState extends State<CodeEditor> {
           minLines: widget.minLines,
           maxLines: widget.maxLines,
           wrap: widget.wrap,
-          background: widget.background,
+          background: backgroundColor,
           padding: widget.padding,
           lineNumberStyle: widget.lineNumberStyle,
           lineNumberBuilder: widget.lineNumberBuilder,
@@ -151,8 +153,7 @@ class CodeEditorState extends State<CodeEditor> {
     return Stack(
       children: [
         Container( 
-          color: widget.decoration == null ? (widget.background ?? 
-                                      codeControllers[0]?.theme?['root']?.backgroundColor ?? Colors.grey.shade900) : null,
+          color: backgroundColor,
           decoration: widget.decoration,
           padding: EdgeInsets.symmetric(vertical: 10),
           child: ListView.builder(

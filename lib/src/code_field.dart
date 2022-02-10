@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:code_text_field/src/autocomplete/popup.dart';
 import 'package:flutter/cupertino.dart';
@@ -278,7 +279,6 @@ class CodeFieldState extends State<CodeField> {
       minLines: widget.minLines,
       maxLines: widget.maxLines,
       scrollController: _codeScroll,
-      expands: widget.expands,
       decoration: InputDecoration(
         isDense: true,  
         enabledBorder: InputBorder.none,
@@ -319,7 +319,7 @@ class CodeFieldState extends State<CodeField> {
                         controller: widget.controller.popupController,
                         editingWindowSize: windowSize,
                         style: textStyle,
-                        backgroundColor: backgroundCol,
+                        backgroundColor: widget.background,
                         parentFocusNode: _focusNode!,
                       )
                     : Container(),
