@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:code_text_field/code_text_field.dart';
 // Import the language & theme
-import 'package:highlight/languages/dart.dart';
+import 'package:code_text_field/languages/dart.dart';
 import 'package:flutter_highlight/themes/monokai-sublime.dart';
 import 'package:flutter_highlight/themes/a11y-dark.dart';
 
