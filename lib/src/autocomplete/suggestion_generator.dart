@@ -1,6 +1,7 @@
-import 'dart:collection';
 import 'dart:convert';
+
 import 'package:autotrie/autotrie.dart';
+import 'package:code_text_field/src/autocomplete/suggestion.dart';
 import 'package:flutter/services.dart';
 
 class SuggestionGenerator {
@@ -49,19 +50,27 @@ class SuggestionGenerator {
     });
   }
 
-  HashMap<String, List<String>> getSuggestions(
-      String text, int cursorPosition) {
+  List<Suggestion> getSuggestions(String text, int cursorPosition) {
     this.cursorPosition = cursorPosition;
     this.text = text;
     String prefix = getCurrentWordPrefix();
     if (prefix.isEmpty) {
-      return HashMap();
+      return [];
     }
     _parseText();
-    HashMap<String, List<String>> suggestions = new HashMap();
-    suggestions["local"] = autoCompleteUser.suggest(prefix);
-    suggestions["language"] = autoCompleteLanguage.suggest(prefix);
-    suggestions["snipplets"] = autoCompleteSnipplets.suggest(prefix);
+    List<Suggestion> suggestions = [];
+    suggestions += autoCompleteUser
+        .suggest(prefix)
+        .map((word) => Suggestion(word, SuggestionType.local))
+        .toList();
+    suggestions += autoCompleteLanguage
+        .suggest(prefix)
+        .map((word) => Suggestion(word, SuggestionType.language))
+        .toList();
+    suggestions += autoCompleteSnipplets
+        .suggest(prefix)
+        .map((word) => Suggestion(word, SuggestionType.snippet))
+        .toList();
     return suggestions;
   }
 
