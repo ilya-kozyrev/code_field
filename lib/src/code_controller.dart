@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:code_text_field/src/autocomplete/popup_controller.dart';
+import 'package:code_text_field/src/autocomplete/suggestion.dart';
 import 'package:code_text_field/src/autocomplete/suggestion_generator.dart';
 import 'package:code_text_field/src/code_modifier.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -299,7 +300,8 @@ class CodeController extends TextEditingController {
   }
 
   void generateSuggestions() {
-    List<String> suggestions = suggestionGenerator!.getSuggestions(text, selection.start)['local']!;
+    List<Suggestion> suggestions =
+        suggestionGenerator!.getSuggestions(text, selection.start);
     if (suggestions.isNotEmpty)
       popupController.show(suggestions);
     else

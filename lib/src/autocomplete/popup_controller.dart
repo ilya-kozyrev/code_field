@@ -1,8 +1,9 @@
+import 'package:code_text_field/src/autocomplete/suggestion.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class PopupController extends ChangeNotifier {
-  late List<String> suggestions;
+  late List<Suggestion> suggestions;
   int _selectedIndex = 0;
   bool isPopupShown = false;
 
@@ -22,7 +23,7 @@ class PopupController extends ChangeNotifier {
 
   int get selectedIndex => _selectedIndex;
 
-  void show(List<String> suggestions) {
+  void show(List<Suggestion> suggestions) {
     this.suggestions = suggestions;
     _selectedIndex = 0;
     isPopupShown = true;
@@ -65,7 +66,7 @@ class PopupController extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getSelectedWord() => suggestions[selectedIndex];
+  String getSelectedWord() => suggestions[selectedIndex].word;
 }
 
 /// Possible directions of completions list navigation
