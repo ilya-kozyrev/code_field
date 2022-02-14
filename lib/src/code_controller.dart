@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:code_text_field/src/autocomplete/popup_controller.dart';
+import 'package:code_text_field/src/autocomplete/multiline_controller.dart';
 import 'package:code_text_field/src/autocomplete/suggestion_generator.dart';
 import 'package:code_text_field/src/code_modifier.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -52,6 +53,7 @@ class CodeController extends TextEditingController {
   bool isPopupShown = false;
   RegExp? styleRegExp;
   late PopupController popupController;
+  late MultilineController? multilineController;
   SuggestionGenerator? suggestionGenerator;
 
   CodeController({
@@ -80,6 +82,7 @@ class CodeController extends TextEditingController {
     modifiers.forEach((el) {
       modifierMap[el.char] = el;
     });
+    this.multilineController = MultilineController();
     suggestionGenerator = SuggestionGenerator(
         'language_id'); // TODO: replace string with some generated value for current language id
     this.popupController = PopupController(onCompletionSelected: this.insertSelectedWord);
@@ -125,7 +128,24 @@ class CodeController extends TextEditingController {
       removeChar();
   }
 
+  void handleTap(bool isMulti) {
+    if (isMulti) {
+      this.multilineController!.isMutli = true;
+      this.multilineController!.isCaret = true;
+      value = this.multilineController!.insertCaret(value);
+    } else {
+      value = multilineController!.clearCarets(value);
+    }
+  }
+
   KeyEventResult onKey(RawKeyEvent event) {
+    if (event.isKeyPressed(LogicalKeyboardKey.arrowDown) ||
+        event.isKeyPressed(LogicalKeyboardKey.arrowUp) ||
+        event.isKeyPressed(LogicalKeyboardKey.arrowRight) ||
+        event.isKeyPressed(LogicalKeyboardKey.arrowLeft)) {
+      value = this.multilineController!.clearCarets(value);
+    }
+
     if (event.isKeyPressed(LogicalKeyboardKey.tab)) {
       text = text.replaceRange(selection.start, selection.end, "\t");
       return KeyEventResult.handled;
@@ -198,8 +218,11 @@ class CodeController extends TextEditingController {
 
   @override
   set value(TextEditingValue newValue) {
+    multilineController!.updateCurrentSelection(
+        newValue.selection.start, value.selection.start);
+
     final loc = _insertedLoc(text, newValue.text);
-    if (loc != null) {
+    if (loc != null && !multilineController!.isMutli) {
       final char = newValue.text[loc];
       final modifier = modifierMap[char];
       final val = modifier?.updateString(rawText, selection, params);
@@ -215,6 +238,8 @@ class CodeController extends TextEditingController {
 
     bool hasTextChanged = newValue.text != super.value.text;
     bool hasSelectionChanged = (newValue.selection != super.value.selection);
+
+    newValue = multilineController!.updateMultiline(value, newValue);
 
     //Because of this part of code ctrl + z dont't work. But maybe it's important, so please don't delete.
     // Now fix the textfield for web

@@ -145,6 +145,7 @@ class CodeFieldState extends State<CodeField> {
   //
   StreamSubscription<bool>? _keyboardVisibilitySubscription;
   FocusNode? _focusNode;
+  bool isMultiline = false;
   String? lines;
   String longestLine = "";
   late Size windowSize;
@@ -172,6 +173,8 @@ class CodeFieldState extends State<CodeField> {
   }
 
   KeyEventResult _onKey(FocusNode node, RawKeyEvent event) {
+    this.isMultiline =
+        event.isAltPressed && event.isControlPressed ? true : false;
     return widget.controller.onKey(event);
   }
 
@@ -309,28 +312,30 @@ class CodeFieldState extends State<CodeField> {
     );
 
     final codeField = TextField(
-      focusNode: _focusNode,
-      scrollPadding: widget.padding,
-      style: textStyle,
-      controller: widget.controller,
-      minLines: widget.minLines,
-      maxLines: widget.maxLines,
-      scrollController: _codeScroll,
-      expands: widget.expands,
-      decoration: InputDecoration(
-        isCollapsed: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 16.0),
-        disabledBorder: InputBorder.none,
-        border: InputBorder.none,
-        focusedBorder: InputBorder.none,
-      ),
-      cursorColor: cursorColor,
-      autocorrect: false,
-      enableSuggestions: false,
-      enabled: widget.enabled,
-      onChanged: widget.onChanged,
-      readOnly: widget.readOnly,
-    );
+        focusNode: _focusNode,
+        scrollPadding: widget.padding,
+        style: textStyle,
+        controller: widget.controller,
+        minLines: widget.minLines,
+        maxLines: widget.maxLines,
+        scrollController: _codeScroll,
+        expands: widget.expands,
+        decoration: InputDecoration(
+          isCollapsed: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 16.0),
+          disabledBorder: InputBorder.none,
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+        ),
+        cursorColor: cursorColor,
+        autocorrect: false,
+        enableSuggestions: false,
+        enabled: widget.enabled,
+        onChanged: widget.onChanged,
+        readOnly: widget.readOnly,
+        onTap: () {
+          widget.controller.handleTap(isMultiline);
+        });
 
     final editingField = Theme(
       data: Theme.of(context).copyWith(
