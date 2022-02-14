@@ -1,5 +1,6 @@
 import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
+import 'main_mode.dart';
 
 const String KEYWORD = "false synchronized abstract private static null if const"
     " for true while strictfp finally protected import native final void enum"
@@ -10,13 +11,11 @@ const String KEYWORD = "false synchronized abstract private static null if const
 const String TYPE = "int boolean String float char var long byte double"
     "short Short Byte Integer Long Float Double Character Boolean";
 
-final java = Mode(
+final java = MainMode(
+    nameOfLanguage: "java",
     refs: {},
     aliases: ["jsp"],
-    keywords: {
-      "keyword" : KEYWORD,
-      "type" : TYPE
-    },
+    keywords: {"keyword": KEYWORD, "type": TYPE},
     illegal: "<\\/|#",
     contains: [
       Mode(
@@ -27,10 +26,7 @@ final java = Mode(
             Mode(begin: "\\w+@", relevance: 0),
             Mode(className: "doctag", begin: "@[A-Za-z]+"),
             PHRASAL_WORDS_MODE,
-            Mode(
-                className: "doctag",
-                begin: "(?:TODO|FIXME|NOTE|BUG|XXX):",
-                relevance: 0)
+            Mode(className: "doctag", begin: "(?:TODO|FIXME|NOTE|BUG|XXX):", relevance: 0)
           ],
           relevance: 0),
       C_LINE_COMMENT_MODE,
@@ -44,10 +40,7 @@ final java = Mode(
           excludeEnd: true,
           keywords: "class interface",
           illegal: "[:\"\\[\\]]",
-          contains: [
-            Mode(beginKeywords: "extends implements"),
-            UNDERSCORE_TITLE_MODE
-          ]),
+          contains: [Mode(beginKeywords: "extends implements"), UNDERSCORE_TITLE_MODE]),
       Mode(beginKeywords: "new throw return else", relevance: 0),
       Mode(
         className: "bullet",
@@ -63,10 +56,9 @@ final java = Mode(
           returnBegin: true,
           end: "[{;=]",
           excludeEnd: true,
-          keywords:
-          {
-            "keyword" : KEYWORD,
-            "type" : TYPE,
+          keywords: {
+            "keyword": KEYWORD,
+            "type": TYPE,
           },
           contains: [
             Mode(
@@ -78,10 +70,9 @@ final java = Mode(
                 className: "params",
                 begin: "\\(",
                 end: "\\)",
-                keywords:
-                {
-                  "keyword" : KEYWORD,
-                  "type" : TYPE,
+                keywords: {
+                  "keyword": KEYWORD,
+                  "type": TYPE,
                 },
                 relevance: 0,
                 contains: [
