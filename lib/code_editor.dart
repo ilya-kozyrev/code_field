@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:highlight/languages/all.dart';
 
 import 'autoRefactorService.dart';
 import 'code_text_field.dart';
 import 'constants/themes.dart';
+import '/languages/all.dart';
 import 'src/code_modifier.dart';
 
 class CodeEditor extends StatefulWidget {
