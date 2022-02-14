@@ -378,30 +378,30 @@ class CodeFieldState extends State<CodeField> {
     );
 
     final codeField = TextField(
-        focusNode: _focusNode,
-        scrollPadding: widget.padding,
-        style: textStyle,
-        controller: widget.controller,
-        minLines: widget.minLines,
-        maxLines: widget.maxLines,
-        scrollController: _codeScroll,
-        expands: widget.expands,
-        decoration: InputDecoration(
-          isCollapsed: true,
-          contentPadding: EdgeInsets.symmetric(vertical: 16.0),
-          disabledBorder: InputBorder.none,
-          border: InputBorder.none,
-          focusedBorder: InputBorder.none,
-        ),
-        cursorColor: cursorColor,
-        autocorrect: false,
-        enableSuggestions: false,
-        enabled: widget.enabled,
-        onChanged: widget.onChanged,
-        readOnly: widget.readOnly,
-        onTap: () {
-          widget.controller.handleTap(isMultiline);
-        });
+      focusNode: _focusNode,
+      scrollPadding: widget.padding,
+      style: textStyle,
+      controller: widget.controller,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
+      scrollController: _codeScroll,
+      expands: widget.expands,
+      decoration: InputDecoration(
+        isCollapsed: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 16.0),
+        disabledBorder: InputBorder.none,
+        border: InputBorder.none,
+        focusedBorder: InputBorder.none,
+      ),
+      cursorColor: cursorColor,
+      autocorrect: false,
+      enableSuggestions: false,
+      enabled: widget.enabled,
+      onChanged: widget.onChanged,
+      readOnly: widget.readOnly,
+      onTap: () {
+        widget.controller.handleTap(isMultiline);
+      });
 
     final editingField = Theme(
       data: Theme.of(context).copyWith(
