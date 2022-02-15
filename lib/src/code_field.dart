@@ -2,57 +2,119 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:code_text_field/src/autocomplete/popup.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
-import './code_controller.dart';
+import 'code_controller.dart';
+
+import '/language_syntax/brackets_counting.dart';
+import '/language_syntax/java_dart_syntax.dart';
+import '/language_syntax/python_syntax.dart';
+import '/language_syntax/scala_syntax.dart';
+import '/language_syntax/golang_syntax.dart';
+import '/constants/constants.dart';
+
+const double LINE_NUMBER_WIDTH = 42;
+const TextAlign LINE_NUMBER_ALIGN = TextAlign.right;
+const double LINE_NUMBER_MARGIN = 5;
+
+class TooltipTextSpan extends WidgetSpan {
+  TooltipTextSpan({
+    required String message,
+    required String number,
+    required TextStyle? style,
+  }) : super(
+          child: Tooltip(
+            message: message,
+            child: Container(
+              child: Text(
+                number,
+                textAlign: LINE_NUMBER_ALIGN,
+                style: style,
+              ),
+              padding: EdgeInsets.only(right: LINE_NUMBER_MARGIN),
+              decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(Radius.circular(4))),
+              width: LINE_NUMBER_WIDTH,
+            ),
+          ),
+        );
+}
+
+Map<int, String> getErrorsMap(String text, String language) {
+  Map<int, String> errors = {};
+  errors.addAll(countingBrackets(text));
+  switch (language) {
+    case java:
+    case dart:
+      {
+        errors.addAll(findJavaDartErrors(text));
+        break;
+      }
+    case go:
+      {
+        errors.addAll(findGolangErrors(text));
+        break;
+      }
+    case python:
+      {
+        errors.addAll(findPythonErrorTabs(text));
+        break;
+      }
+    case scala:
+      {
+        errors.addAll(findScalaErrors(text));
+        break;
+      }
+  }
+  return errors;
+}
 
 class LineNumberController extends TextEditingController {
   final TextSpan Function(int, TextStyle?)? lineNumberBuilder;
+  String language;
+  String codeFieldText;
 
-  LineNumberController(this.lineNumberBuilder);
+  LineNumberController(
+      this.lineNumberBuilder, this.language, this.codeFieldText);
 
   @override
   TextSpan buildTextSpan(
       {required BuildContext context, TextStyle? style, bool? withComposing}) {
-    final children = <TextSpan>[];
+    final children = <InlineSpan>[];
     final list = text.split("\n");
+    Map<int, String> errors = getErrorsMap(codeFieldText, language);
     for (int k = 0; k < list.length; k++) {
       final el = list[k];
       final number = int.parse(el);
       var textSpan = TextSpan(text: el, style: style);
-      if (lineNumberBuilder != null)
+
+      if (lineNumberBuilder != null) {
         textSpan = lineNumberBuilder!(number, style);
-      children.add(textSpan);
-      if (k < list.length - 1) children.add(TextSpan(text: "\n"));
+      }
+
+      if (errors.containsKey(number)) {
+        children.add(TooltipTextSpan(
+            message: errors[number]!, number: el, style: style));
+      } else {
+        children.add(textSpan);
+        if (k < list.length - 1) children.add(TextSpan(text: "\n"));
+      }
     }
-    return TextSpan(children: children, style: style);
+    children.add(TextSpan(text: "\n "));
+    return TextSpan(children: children);
   }
 }
 
 class LineNumberStyle {
-  /// Width of the line number column
-  final double width;
-
-  /// Alignment of the numbers in the column
-  final TextAlign textAlign;
-
   /// Style of the numbers
   final TextStyle? textStyle;
 
   /// Background of the line number column
   final Color? background;
 
-  /// Central horizontal margin between the numbers and the code
-  final double margin;
-
   const LineNumberStyle({
-    this.width = 42.0,
-    this.textAlign = TextAlign.right,
-    this.margin = 10.0,
     this.textStyle,
     this.background,
   });
@@ -158,7 +220,8 @@ class CodeFieldState extends State<CodeField> {
     _controllers = LinkedScrollControllerGroup();
     _numberScroll = _controllers?.addAndGet();
     _codeScroll = _controllers?.addAndGet();
-    _numberController = LineNumberController(widget.lineNumberBuilder);
+    _numberController = LineNumberController(widget.lineNumberBuilder,
+        widget.controller.language!.nameOfLanguage, widget.controller.text);
     widget.controller.addListener(_onTextChanged);
     widget.controller.addListener(() {
       _updateCursorOffset(widget.controller.text);
@@ -199,6 +262,7 @@ class CodeFieldState extends State<CodeField> {
       buf.add((k + 1).toString());
     }
     _numberController?.text = buf.join("\n");
+    _numberController?.codeFieldText = widget.controller.text;
     // Find longest line
     longestLine = "";
     widget.controller.text.split("\n").forEach((line) {
@@ -210,7 +274,7 @@ class CodeFieldState extends State<CodeField> {
 // Wrap the codeField in a horizontal scrollView
   Widget _wrapInScrollView(
       Widget codeField, TextStyle textStyle, double minWidth) {
-    final leftPad = widget.lineNumberStyle.margin / 2;
+    final leftPad = LINE_NUMBER_MARGIN;
     final intrinsic = IntrinsicWidth(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -277,7 +341,9 @@ class CodeFieldState extends State<CodeField> {
       scrollPadding: widget.padding,
       style: numberTextStyle,
       controller: _numberController,
-      enabled: false,
+      readOnly: true,
+      enableInteractiveSelection: false,
+      mouseCursor: SystemMouseCursors.basic,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
       expands: widget.expands,
@@ -287,14 +353,14 @@ class CodeFieldState extends State<CodeField> {
         contentPadding: EdgeInsets.symmetric(vertical: 16.0),
         disabledBorder: InputBorder.none,
       ),
-      textAlign: widget.lineNumberStyle.textAlign,
+      textAlign: LINE_NUMBER_ALIGN,
     );
 
     final numberCol = Container(
-      width: widget.lineNumberStyle.width,
+      width: LINE_NUMBER_WIDTH,
       padding: EdgeInsets.only(
         left: widget.padding.left,
-        right: widget.lineNumberStyle.margin / 2,
+        right: LINE_NUMBER_MARGIN,
       ),
       color: widget.lineNumberStyle.background,
       child: lineNumberCol,
@@ -399,7 +465,7 @@ class CodeFieldState extends State<CodeField> {
           caretOffset.dx +
               widget.lineNumberStyle.width +
               widget.padding.left +
-              widget.lineNumberStyle.margin / 2 -
+              LINE_NUMBER_MARGIN / 2 -
               _horizontalCodeScroll!.offset,
           0);
       cursorY =

@@ -1,12 +1,14 @@
 import 'package:highlight/highlight_core.dart';
 import '../LanguagesModes/common_modes.dart';
+import 'main_mode.dart';
 
 const KEYWORD = "and elif is global as in if"
     " from raise for except finally print import pass return"
     " exec else break not with class assert yield try while continue"
     " del or def lambda async await nonlocal|10";
 
-final python = Mode(
+final python = MainMode(
+    nameOfLanguage: "python",
     refs: {
       'substringMode': Mode(
           className: "subst",
@@ -18,11 +20,7 @@ final python = Mode(
             "literal": "False None True",
           },
           illegal: "#",
-          contains: [
-            Mode(ref: 'stringMode'),
-            Mode(ref: 'numberMode'),
-            Mode(ref: 'metaMode')
-          ]),
+          contains: [Mode(ref: 'stringMode'), Mode(ref: 'numberMode'), Mode(ref: 'metaMode')]),
       'simpleMode': Mode(begin: "\\{\\{", relevance: 0),
       'stringMode': Mode(className: "string", contains: [
         BACKSLASH_ESCAPE
@@ -53,25 +51,21 @@ final python = Mode(
         Mode(begin: "(u|r|ur)\"", end: "\\n|\"", relevance: 10),
         Mode(begin: "(b|br)'", end: "\\n|'"),
         Mode(begin: "(b|br)\"", end: "\\n|\""),
-        Mode(begin: "(fr|rf|f)'", end: "\\n|'", contains: [
-          BACKSLASH_ESCAPE,
-          Mode(ref: 'simpleMode'),
-          Mode(ref: 'substringMode')
-        ]),
-        Mode(begin: "(fr|rf|f)\"", end: "\\n|\"", contains: [
-          BACKSLASH_ESCAPE,
-          Mode(ref: 'simpleMode'),
-          Mode(ref: 'substringMode')
-        ]),
+        Mode(
+            begin: "(fr|rf|f)'",
+            end: "\\n|'",
+            contains: [BACKSLASH_ESCAPE, Mode(ref: 'simpleMode'), Mode(ref: 'substringMode')]),
+        Mode(
+            begin: "(fr|rf|f)\"",
+            end: "\\n|\"",
+            contains: [BACKSLASH_ESCAPE, Mode(ref: 'simpleMode'), Mode(ref: 'substringMode')]),
         APOS_STRING_MODE,
         QUOTE_STRING_MODE
       ]),
       'numberMode': Mode(className: "number", relevance: 0, variants: [
         Mode(begin: "\\b(0b[01]+)[lLjJ]?"),
         Mode(begin: "\\b(0o[0-7]+)[lLjJ]?"),
-        Mode(
-            begin:
-                "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)[lLjJ]?")
+        Mode(begin: "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)[lLjJ]?")
       ]),
       'metaMode': Mode(className: "meta", begin: "^(>>>|\\.\\.\\.) "),
     },
