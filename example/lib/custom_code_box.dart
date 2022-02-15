@@ -147,9 +147,11 @@ class _InnerFieldState extends State<InnerField> {
 
   @override
   Widget build(BuildContext context) {
-    return CodeField(
-      controller: _codeController!,
-      textStyle: TextStyle(fontFamily: 'SourceCode'),
+    return Container(
+      child: CodeField(
+        controller: _codeController!,
+        textStyle: TextStyle(fontFamily: 'SourceCode'),
+      ),
     );
   }
 }

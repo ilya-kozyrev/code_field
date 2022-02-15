@@ -5,18 +5,18 @@ import 'package:code_text_field/src/autocomplete/popup.dart';
 import 'package:flutter/material.dart';
 import 'package:linked_scroll_controller/linked_scroll_controller.dart';
 
-import 'code_controller.dart';
-
+import '/constants/constants.dart';
 import '/language_syntax/brackets_counting.dart';
+import '/language_syntax/golang_syntax.dart';
 import '/language_syntax/java_dart_syntax.dart';
 import '/language_syntax/python_syntax.dart';
 import '/language_syntax/scala_syntax.dart';
-import '/language_syntax/golang_syntax.dart';
-import '/constants/constants.dart';
+import 'code_controller.dart';
 
 const double LINE_NUMBER_WIDTH = 42;
 const TextAlign LINE_NUMBER_ALIGN = TextAlign.right;
 const double LINE_NUMBER_MARGIN = 5;
+const double TEXT_FIELD_MARGIN = 16;
 
 class TooltipTextSpan extends WidgetSpan {
   TooltipTextSpan({
@@ -350,7 +350,7 @@ class CodeFieldState extends State<CodeField> {
       scrollController: _numberScroll,
       decoration: InputDecoration(
         isCollapsed: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 16.0),
+        contentPadding: EdgeInsets.symmetric(vertical: TEXT_FIELD_MARGIN),
         disabledBorder: InputBorder.none,
       ),
       textAlign: LINE_NUMBER_ALIGN,
@@ -378,7 +378,7 @@ class CodeFieldState extends State<CodeField> {
       expands: widget.expands,
       decoration: InputDecoration(
         isCollapsed: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 16.0),
+        contentPadding: EdgeInsets.symmetric(vertical: TEXT_FIELD_MARGIN),
         disabledBorder: InputBorder.none,
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
@@ -404,14 +404,13 @@ class CodeFieldState extends State<CodeField> {
     );
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        height: double.infinity,
         key: _codeFieldKey,
+        height: double.infinity,
         child: SingleChildScrollView(
           controller: _generalScroll,
           child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
-            windowSize = Size(
-                constraints.maxWidth - widget.lineNumberStyle.width,
+            windowSize = Size(constraints.maxWidth - LINE_NUMBER_WIDTH,
                 constraints.maxHeight);
             return Stack(
               clipBehavior: Clip.none,
@@ -432,7 +431,8 @@ class CodeFieldState extends State<CodeField> {
                         align: _popupAlign,
                         leftIndent: cursorX,
                         controller: widget.controller.popupController,
-                        editingWindowSize: windowSize,
+                        editingWindowSize: Size.fromHeight(
+                            _generalScroll.position.viewportDimension),
                         style: textStyle,
                         backgroundColor: backgroundCol,
                         parentFocusNode: _focusNode!,
@@ -463,7 +463,7 @@ class CodeFieldState extends State<CodeField> {
     setState(() {
       cursorX = max(
           caretOffset.dx +
-              widget.lineNumberStyle.width +
+              LINE_NUMBER_WIDTH +
               widget.padding.left +
               LINE_NUMBER_MARGIN / 2 -
               _horizontalCodeScroll!.offset,
@@ -477,15 +477,16 @@ class CodeFieldState extends State<CodeField> {
 
   double calculateVerticalPopupOffset(double caretOffset, double caretHeight) {
     double popupHeight = _popupKey.currentContext?.size?.height ?? 100;
-    double? windowHeight = _codeFieldKey.currentContext!.size!.height;
+    double? windowHeight = _generalScroll.position.viewportDimension;
     double? editingFieldHeight = _editingFieldKey.currentContext!.size!.height;
-    double rawOffset =
-        caretOffset + 16 + widget.padding.top - _codeScroll!.offset;
+    double rawOffset = caretOffset +
+        TEXT_FIELD_MARGIN +
+        widget.padding.top -
+        _codeScroll!.offset;
     if (rawOffset - _generalScroll.offset + popupHeight + caretHeight >
-            windowHeight &&
-        windowHeight > popupHeight + caretHeight) {
+        windowHeight) {
       _popupAlign = PopupAlign.bottom;
-      return editingFieldHeight - rawOffset;
+      return editingFieldHeight - rawOffset + TEXT_FIELD_MARGIN;
     }
     _popupAlign = PopupAlign.top;
     return rawOffset + caretHeight;
