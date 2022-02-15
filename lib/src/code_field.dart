@@ -136,13 +136,16 @@ class CodeFieldState extends State<CodeField> {
   ScrollController? _horizontalCodeScroll;
   LineNumberController? _numberController;
   GlobalKey _codeFieldKey = GlobalKey();
+  GlobalKey _editingFieldKey = GlobalKey();
+  GlobalKey _popupKey = GlobalKey();
+  ScrollController _generalScroll = ScrollController();
+  PopupAlign _popupAlign = PopupAlign.top;
 
   double cursorX = 0.0;
   double cursorY = 0.0;
   double painterWidth = 0.0;
   double painterHeight = 0.0;
 
-  //
   StreamSubscription<bool>? _keyboardVisibilitySubscription;
   FocusNode? _focusNode;
   String? lines;
@@ -163,11 +166,6 @@ class CodeFieldState extends State<CodeField> {
     _horizontalCodeScroll = ScrollController(initialScrollOffset: 0.0);
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode!.attach(context, onKey: _onKey);
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      double width = _codeFieldKey.currentContext!.size!.width;
-      double height = _codeFieldKey.currentContext!.size!.height;
-      windowSize = Size(width - widget.lineNumberStyle.width, height);
-    });
     _onTextChanged();
   }
 
@@ -190,13 +188,7 @@ class CodeFieldState extends State<CodeField> {
   }
 
   void rebuild() {
-    setState(() {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
-        double width = _codeFieldKey.currentContext!.size!.width;
-        double height = _codeFieldKey.currentContext!.size!.height;
-        windowSize = Size(width - widget.lineNumberStyle.width, height);
-      });
-    });
+    setState(() {});
   }
 
   void _onTextChanged() {
@@ -309,6 +301,7 @@ class CodeFieldState extends State<CodeField> {
     );
 
     final codeField = TextField(
+      key: _editingFieldKey,
       focusNode: _focusNode,
       scrollPadding: widget.padding,
       style: textStyle,
@@ -343,22 +336,35 @@ class CodeFieldState extends State<CodeField> {
         },
       ),
     );
-    return Container(
-      decoration: widget.decoration,
-      color: backgroundCol,
-      key: _codeFieldKey,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          numberCol,
-          Expanded(
-            child: Stack(
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        height: double.infinity,
+        key: _codeFieldKey,
+        child: SingleChildScrollView(
+          controller: _generalScroll,
+          child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            windowSize = Size(
+                constraints.maxWidth - widget.lineNumberStyle.width,
+                constraints.maxHeight);
+            return Stack(
+              clipBehavior: Clip.none,
               children: [
-                editingField,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    numberCol,
+                    Expanded(
+                      child: editingField,
+                    ),
+                  ],
+                ),
                 widget.controller.popupController.isPopupShown
                     ? Popup(
-                        row: cursorY,
-                        column: cursorX,
+                        key: _popupKey,
+                        verticalIndent: cursorY,
+                        align: _popupAlign,
+                        leftIndent: cursorX,
                         controller: widget.controller.popupController,
                         editingWindowSize: windowSize,
                         style: textStyle,
@@ -367,11 +373,11 @@ class CodeFieldState extends State<CodeField> {
                       )
                     : Container(),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
+            );
+          }),
+        ),
+      );
+    });
   }
 
   void _updateCursorOffset(String text) {
@@ -391,19 +397,31 @@ class CodeFieldState extends State<CodeField> {
     setState(() {
       cursorX = max(
           caretOffset.dx +
+              widget.lineNumberStyle.width +
               widget.padding.left +
               widget.lineNumberStyle.margin / 2 -
               _horizontalCodeScroll!.offset,
           0);
-      cursorY = max(
-          caretOffset.dy +
-              caretHeight +
-              16 +
-              widget.padding.top -
-              _codeScroll!.offset,
-          0);
+      cursorY =
+          max(calculateVerticalPopupOffset(caretOffset.dy, caretHeight), 0);
       painterWidth = painter.width;
       painterHeight = painter.height;
     });
+  }
+
+  double calculateVerticalPopupOffset(double caretOffset, double caretHeight) {
+    double popupHeight = _popupKey.currentContext?.size?.height ?? 100;
+    double? windowHeight = _codeFieldKey.currentContext!.size!.height;
+    double? editingFieldHeight = _editingFieldKey.currentContext!.size!.height;
+    double rawOffset =
+        caretOffset + 16 + widget.padding.top - _codeScroll!.offset;
+    if (rawOffset - _generalScroll.offset + popupHeight + caretHeight >
+            windowHeight &&
+        windowHeight > popupHeight + caretHeight) {
+      _popupAlign = PopupAlign.bottom;
+      return editingFieldHeight - rawOffset;
+    }
+    _popupAlign = PopupAlign.top;
+    return rawOffset + caretHeight;
   }
 }
