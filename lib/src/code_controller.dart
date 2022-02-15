@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:code_text_field/src/autocomplete/popup_controller.dart';
-import 'package:code_text_field/src/autocomplete/multiline_controller.dart';
+import 'package:code_text_field/src/multiline_controller.dart';
 import 'package:code_text_field/src/autocomplete/suggestion.dart';
 import 'package:code_text_field/src/autocomplete/suggestion_generator.dart';
 import 'package:code_text_field/src/code_modifier.dart';
@@ -175,11 +175,13 @@ class CodeController extends TextEditingController {
     String selectedWord = popupController.getSelectedWord();
     int startPosition = selection.baseOffset -
         suggestionGenerator!.getCurrentWordPrefix().length;
-    text = text.replaceRange(startPosition, selection.baseOffset, selectedWord);
-    selection = previousSelection.copyWith(
-      baseOffset: startPosition + selectedWord.length,
-      extentOffset: startPosition + selectedWord.length,
-    );
+    value = value.copyWith(
+        text: text.replaceRange(
+            startPosition, selection.baseOffset, selectedWord),
+        selection: previousSelection.copyWith(
+          baseOffset: startPosition + selectedWord.length,
+          extentOffset: startPosition + selectedWord.length,
+        ));
     popupController.hide();
   }
 
