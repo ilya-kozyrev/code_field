@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:code_text_field/autoRefactorService.dart';
 import 'package:code_text_field/code_editor.dart';
 import 'package:code_text_field/constants/constants.dart';
-
-
-import 'package:code_text_field/autoRefactorService.dart';
-import 'package:code_text_field/constants/constants.dart';
-import 'package:code_text_field/constants/themes.dart';
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
