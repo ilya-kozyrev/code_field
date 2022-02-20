@@ -14,7 +14,7 @@ import '/language_syntax/scala_syntax.dart';
 import '/language_syntax/golang_syntax.dart';
 import '/constants/constants.dart';
 
-const TextAlign LINE_NUMBER_ALIGN = TextAlign.center;
+const TextAlign LINE_NUMBER_ALIGN = TextAlign.left;
 const double LINE_NUMBER_MARGIN = 5;
 
 class TooltipTextSpan extends WidgetSpan {
@@ -426,7 +426,6 @@ class CodeFieldState extends State<CodeField> {
       cursorY = max(
           caretOffset.dy +
               caretHeight +
-              16 +
               widget.padding.top -
               _codeScroll!.offset,
           0);

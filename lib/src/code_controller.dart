@@ -83,7 +83,7 @@ class CodeController extends TextEditingController {
       modifierMap[el.char] = el;
     });
     suggestionGenerator = SuggestionGenerator(
-        'language_id'); // TODO: replace string with some generated value for current language id
+        language!.nameOfLanguage); // TODO: replace string with some generated value for current language id
     this.popupController = PopupController(onCompletionSelected: this.insertSelectedWord);
   }
 
