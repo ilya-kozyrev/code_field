@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:code_text_field/code_text_field.dart';
-import 'package:code_text_field/languages/all.dart';
 
+import 'package:code_text_field/code_editor.dart';
 import 'package:code_text_field/constants/constants.dart';
-import 'package:code_text_field/constants/themes.dart';
 
 class CustomCodeBox extends StatefulWidget {
   final String language;
@@ -86,75 +84,24 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
       }, 
     );
 
-    final buttons = Container (
-      height: MediaQuery.of(context).size.height/13,
-      color: Colors.deepPurple[900],
-      child: Row(
-        children: [
-        Spacer(flex: 2),
-        Text('Code editor', style: TextStyle(fontSize: 28, color: Colors.white)),
-        Spacer(flex: 35),
-        codeDropdown,
-        Spacer(),
-        themeDropdown,
-        Spacer(),
-        resetButton
-        ]
-      )
-    );
-    final codeField = InnerField(
+    Widget codeField() => CodeEditor(
       key: ValueKey("$language - $theme - $reset"),
       language: language!,
-      theme: theme!,
+      theme: theme!
     );
-    return Column(children: [
-      buttons,
-      codeField,
-    ]);
-  }
-}
 
-class InnerField extends StatefulWidget {
-  final String language;
-  final String theme;
-
-  const InnerField({Key? key, required this.language, required this.theme})
-      : super(key: key);
-
-  @override
-  _InnerFieldState createState() => _InnerFieldState();
-}
-
-class _InnerFieldState extends State<InnerField> {
-  CodeController? _codeController;
-
-  @override
-  void initState() {
-    super.initState();
-    _codeController = CodeController(
-      language: allLanguages[widget.language],
-      theme: THEMES[widget.theme],
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.deepPurple[900],
+        title: Text('Code editor', style: TextStyle(color: Colors.white)),
+        actions: [
+          codeDropdown,
+          SizedBox(width: MediaQuery.of(context).size.width/60),
+          themeDropdown,
+          resetButton
+        ],
+      ),
+      body: codeField(),
     );
-  }
-
-  @override
-  void dispose() {
-    _codeController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    
-    return Container(
-      color: _codeController!.theme!['root']!.backgroundColor,
-      height: MediaQuery.of(context).size.height / 13 * 12,
-      child: SingleChildScrollView(
-        child: CodeField(
-          controller: _codeController!,
-          textStyle: const TextStyle(fontFamily: 'SourceCode'),
-        )
-      )
-      );
   }
 }

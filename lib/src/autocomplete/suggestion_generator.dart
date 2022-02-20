@@ -7,14 +7,15 @@ import 'package:flutter/services.dart';
 class SuggestionGenerator {
   RegExp identifierRegex = RegExp(r"^[_a-zA-Z0-9]+$");
   RegExp splitRegex = RegExp(r"[^_a-zA-Z0-9]+");
-  String? languageID;
+  String? language;
   final autoCompleteLanguage = AutoComplete(engine: SortEngine.entriesOnly());
   final autoCompleteUser = AutoComplete(engine: SortEngine.entriesOnly());
   final autoCompleteSnipplets = AutoComplete(engine: SortEngine.entriesOnly());
   late int cursorPosition;
   late String text;
 
-  SuggestionGenerator(this.languageID) {
+  SuggestionGenerator(this.language) {
+    language = this.language;
     this.cursorPosition = 0;
     this.text = '';
     initDictionary();
@@ -22,7 +23,7 @@ class SuggestionGenerator {
 
   Future<Map<String, dynamic>> getConfig() async {
     String config = await rootBundle
-        .loadString('packages/code_text_field/assets/keywords/dart.json');
+        .loadString('packages/code_text_field/assets/keywords/$language.json');
     Map<String, dynamic> jsonConfig = jsonDecode(config);
     return jsonConfig;
   }
