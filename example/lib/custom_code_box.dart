@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:code_text_field/code_text_field.dart';
 import 'package:code_text_field/languages/all.dart';
 
-import 'package:code_text_field/autoRefactorService.dart';
 import 'package:code_text_field/constants/constants.dart';
 import 'package:code_text_field/constants/themes.dart';
 
@@ -150,28 +149,12 @@ class _InnerFieldState extends State<InnerField> {
     return Container(
       color: _codeController!.theme!['root']!.backgroundColor,
       height: MediaQuery.of(context).size.height / 13 * 12,
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            child: CodeField(
-              controller: _codeController!,
-              textStyle: const TextStyle(fontFamily: 'SourceCode'),
-            )
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: FloatingActionButton(
-              child: const Icon(Icons.format_align_left_outlined),
-              backgroundColor: Colors.indigo[800],
-              onPressed: (){
-                setState(() {
-                  _codeController!.text = autoRefactor( _codeController!.text, widget.language);
-                });
-              }
-            )
-          )
-        ]
+      child: SingleChildScrollView(
+        child: CodeField(
+          controller: _codeController!,
+          textStyle: const TextStyle(fontFamily: 'SourceCode'),
+        )
       )
-    );
+      );
   }
 }
