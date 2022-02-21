@@ -17,6 +17,7 @@ const double LINE_NUMBER_WIDTH = 42;
 const TextAlign LINE_NUMBER_ALIGN = TextAlign.right;
 const double LINE_NUMBER_MARGIN = 5;
 const double TEXT_FIELD_MARGIN = 16;
+const double BOTTOM_PADDING = 200;
 
 class TooltipTextSpan extends WidgetSpan {
   TooltipTextSpan({
@@ -197,7 +198,6 @@ class CodeFieldState extends State<CodeField> {
   ScrollController? _codeScroll;
   ScrollController? _horizontalCodeScroll;
   LineNumberController? _numberController;
-  GlobalKey _codeFieldKey = GlobalKey();
   GlobalKey _editingFieldKey = GlobalKey();
   GlobalKey _popupKey = GlobalKey();
   ScrollController _generalScroll = ScrollController();
@@ -212,7 +212,6 @@ class CodeFieldState extends State<CodeField> {
   FocusNode? _focusNode;
   String? lines;
   String longestLine = "";
-  late Size windowSize;
 
   @override
   void initState() {
@@ -402,20 +401,18 @@ class CodeFieldState extends State<CodeField> {
         },
       ),
     );
+
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        key: _codeFieldKey,
         height: double.infinity,
         child: SingleChildScrollView(
           controller: _generalScroll,
-          child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-            windowSize = Size(constraints.maxWidth - LINE_NUMBER_WIDTH,
-                constraints.maxHeight);
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Row(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: BOTTOM_PADDING),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     numberCol,
@@ -424,23 +421,24 @@ class CodeFieldState extends State<CodeField> {
                     ),
                   ],
                 ),
-                widget.controller.popupController.isPopupShown
-                    ? Popup(
-                        key: _popupKey,
-                        verticalIndent: cursorY,
-                        align: _popupAlign,
-                        leftIndent: cursorX,
-                        controller: widget.controller.popupController,
-                        editingWindowSize: Size.fromHeight(
-                            _generalScroll.position.viewportDimension),
-                        style: textStyle,
-                        backgroundColor: backgroundCol,
-                        parentFocusNode: _focusNode!,
-                      )
-                    : Container(),
-              ],
-            );
-          }),
+              ),
+              widget.controller.popupController.isPopupShown
+                  ? Popup(
+                      key: _popupKey,
+                      verticalIndent: cursorY,
+                      align: _popupAlign,
+                      leftIndent: cursorX,
+                      controller: widget.controller.popupController,
+                      editingWindowSize: Size(
+                          constraints.maxWidth - LINE_NUMBER_WIDTH,
+                          _generalScroll.position.viewportDimension),
+                      style: textStyle,
+                      backgroundColor: backgroundCol,
+                      parentFocusNode: _focusNode!,
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       );
     });
@@ -486,7 +484,10 @@ class CodeFieldState extends State<CodeField> {
     if (rawOffset - _generalScroll.offset + popupHeight + caretHeight >
         windowHeight) {
       _popupAlign = PopupAlign.bottom;
-      return editingFieldHeight - rawOffset + TEXT_FIELD_MARGIN;
+      return editingFieldHeight -
+          rawOffset +
+          TEXT_FIELD_MARGIN +
+          BOTTOM_PADDING;
     }
     _popupAlign = PopupAlign.top;
     return rawOffset + caretHeight;

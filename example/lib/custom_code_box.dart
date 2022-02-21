@@ -142,7 +142,7 @@ class _InnerFieldState extends State<InnerField> {
         color: _codeController!.theme!['root']!.backgroundColor,
         height: MediaQuery.of(context).size.height / 13 * 12,
         child: Stack(children: [
-          SingleChildScrollView(
+          Container(
               child: CodeField(
             controller: _codeController!,
             textStyle: const TextStyle(fontFamily: 'SourceCode'),
