@@ -277,10 +277,27 @@ class CodeFieldState extends State<CodeField> {
   }
 
   // Wrap the codeField in a horizontal scrollView
-  Widget _wrapInScrollView(Widget codeField) {
+  Widget _wrapInScrollView(
+      Widget codeField, TextStyle textStyle, double minWidth) {
     final leftPad = LINE_NUMBER_MARGIN / 2;
     final intrinsic = IntrinsicWidth(
-      child: codeField
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 0.0,
+              minWidth: max(minWidth - leftPad, 0.0),
+            ),
+            child: Padding(
+              child: Text(longestLine, style: textStyle),
+              padding: const EdgeInsets.only(right: 16.0),
+            ), // Add extra padding
+          ),
+          codeField,
+        ],
+      )
     );
 
     return SingleChildScrollView(
@@ -375,7 +392,12 @@ class CodeFieldState extends State<CodeField> {
       data: Theme.of(context).copyWith(
         textSelectionTheme: widget.textSelectionTheme,
       ),
-      child: widget.wrap ? codeField : _wrapInScrollView(codeField)
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          // Control horizontal scrolling
+          return _wrapInScrollView(codeField, textStyle, constraints.maxWidth);
+        },
+      ),
     );
 
     return Container(
