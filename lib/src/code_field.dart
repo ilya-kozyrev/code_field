@@ -14,7 +14,7 @@ import '/language_syntax/scala_syntax.dart';
 import '/language_syntax/golang_syntax.dart';
 import '/constants/constants.dart';
 
-const TextAlign LINE_NUMBER_ALIGN = TextAlign.center;
+const TextAlign LINE_NUMBER_ALIGN = TextAlign.left;
 const double LINE_NUMBER_MARGIN = 5;
 
 class TooltipTextSpan extends WidgetSpan {
@@ -84,7 +84,8 @@ class LineNumberController extends TextEditingController {
       {required BuildContext context, TextStyle? style, bool? withComposing}) {
     final children = <InlineSpan>[];
     final list = text.split("\n");
-    double width = (list.last.toString().length + 1) * LineNumberStyle().width;
+    int lastLen = list.last.toString().length;
+    double width = ((lastLen < 2 ? 2 : lastLen) + 1) * LineNumberStyle().width;
     Map<int, String> errors = getErrorsMap(codeFieldText, language);
     for (int k = 0; k < list.length; k++) {
       final el = list[k];
@@ -220,7 +221,8 @@ class CodeFieldState extends State<CodeField> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       double width = _codeFieldKey.currentContext!.size!.width;
       double height = _codeFieldKey.currentContext!.size!.height;
-      double colWidth = (((_numberController?.text ?? '\n').split('\n')).last.toString().length + 1) * widget.lineNumberStyle.width;
+      int lastLen = ((_numberController?.text ?? '\n').split('\n')).last.toString().length;
+      double colWidth = ((lastLen < 2 ? 2 : lastLen) + 1) * widget.lineNumberStyle.width;
       windowSize = Size(width - colWidth, height);
     });
     _onTextChanged();
@@ -249,7 +251,8 @@ class CodeFieldState extends State<CodeField> {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         double width = _codeFieldKey.currentContext!.size!.width;
         double height = _codeFieldKey.currentContext!.size!.height;
-        double colWidth = (((_numberController?.text ?? '\n').split('\n')).last.toString().length + 1) * widget.lineNumberStyle.width;
+        int lastLen = ((_numberController?.text ?? '\n').split('\n')).last.toString().length;
+        double colWidth = ((lastLen < 2 ? 2 : lastLen) + 1) * widget.lineNumberStyle.width;
         windowSize = Size(width - colWidth, height);
       });
     });
@@ -336,8 +339,11 @@ class CodeFieldState extends State<CodeField> {
       textAlign: LINE_NUMBER_ALIGN,
     );
 
+    int lastLen = ((_numberController?.text ?? '\n').split('\n')).last.toString().length;
+    double colWidth = ((lastLen < 2 ? 2 : lastLen) + 1) * widget.lineNumberStyle.width;
+
     final numberCol = Container(
-      width: (((_numberController?.text ?? '\n').split('\n')).last.toString().length + 1) * widget.lineNumberStyle.width,
+      width: colWidth,
       color: widget.lineNumberStyle.background,
       child: lineNumberCol,
     );
@@ -373,7 +379,6 @@ class CodeFieldState extends State<CodeField> {
     );
 
     return Container(
-      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
       key: _codeFieldKey,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,7 +431,6 @@ class CodeFieldState extends State<CodeField> {
       cursorY = max(
           caretOffset.dy +
               caretHeight +
-              16 +
               widget.padding.top -
               _codeScroll!.offset,
           0);

@@ -155,7 +155,7 @@ class CodeEditorState extends State<CodeEditor> {
         Container( 
           color: backgroundColor,
           decoration: widget.decoration,
-          padding: EdgeInsets.symmetric(vertical: 10),
+          padding: EdgeInsets.fromLTRB(15,15,0,15),
           child: ListView.builder(
             itemCount: codeControllers.length,
             itemBuilder: (BuildContext context, int index){
