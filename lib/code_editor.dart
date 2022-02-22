@@ -88,6 +88,9 @@ class CodeEditorState extends State<CodeEditor> {
         numberOfLinesBeforeBlock[i] = numberOfLinesBeforeBlock[i-1] + numberOfLinesPrevBlock;
         codeControllers[i]!.stringsNumber = numberOfLinesBeforeBlock[i];
       }
+      int maxNumber = codeControllers[codeControllers.length - 1]!.stringsNumber
+                                        + codeControllers[codeControllers.length - 1]!.text.split('\n').length;
+      codeControllers.forEach((element) {element!.maxNumber = maxNumber;});
     });
   }
 

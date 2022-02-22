@@ -47,6 +47,7 @@ class CodeController extends TextEditingController {
   /// onChange callback, called whenever the content is changed
   final void Function(String)? onChange;
   int stringsNumber;
+  int maxNumber;
   bool enabled;
 
   /* Computed members */
@@ -68,6 +69,7 @@ class CodeController extends TextEditingController {
     required this.modifiers,
     required this.webSpaceFix,
     this.stringsNumber = 0,
+    this.maxNumber = 1,
     this.enabled = true,
     this.onChange,
   }) : super(text: text) {
