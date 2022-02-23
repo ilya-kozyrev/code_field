@@ -9,6 +9,7 @@ linter:
     - cancel_subscriptions
     - close_sinks
     - comment_references
+    - directives_ordering
     - one_member_abstracts
     - only_throw_errors
     - package_api_docs
