@@ -22,7 +22,9 @@ class MultilineController {
             diff > 0 ? newText.substring(start, start + diff) : "";
 
         for (int i = 0; i < carets.length; i++) {
-          if (carets[i] >= currentSelection) carets[i] += diff;
+          if (carets[i] >= currentSelection) {
+            carets[i] += diff;
+          }
         }
 
         carets.sort();
@@ -45,7 +47,9 @@ class MultilineController {
             }
           }
 
-          if (i + 1 != carets.length) carets[i + 1] += diff * (i + 1);
+          if (i + 1 != carets.length) {
+            carets[i + 1] += diff * (i + 1);
+          }
         }
 
         carets = carets.where((i) => i != -1).toList();
@@ -75,7 +79,9 @@ class MultilineController {
 
     for (int i = 0; i < carets.length; i++) {
       clearedText = clearedText.replaceRange(carets[i], carets[i] + 1, "");
-      if (i + 1 != carets.length) carets[i + 1] -= i + 1;
+      if (i + 1 != carets.length) {
+        carets[i + 1] -= i + 1;
+      }
     }
 
     value = value.copyWith(
@@ -90,6 +96,11 @@ class MultilineController {
 
   TextEditingValue insertCaret(TextEditingValue value) {
     final sel = value.selection;
+    if (this.carets.contains(sel.start) ||
+        this.carets.contains(sel.start - 1)) {
+      return value;
+    }
+    
     if (value.text.length == 0) {
       currentSelection = 0;
     }
@@ -97,7 +108,9 @@ class MultilineController {
     int isAbove = currentSelection < value.selection.start ? 1 : 0;
 
     for (int i = 0; i < carets.length; i++) {
-      if (carets[i] >= currentSelection) carets[i] += 1;
+      if (carets[i] >= currentSelection) {
+        carets[i] += 1;
+      }
     }
 
     carets.add(currentSelection);
