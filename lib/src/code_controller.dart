@@ -136,6 +136,8 @@ class CodeController extends TextEditingController {
       this.multilineController!.isCaret = true;
       value = this.multilineController!.insertCaret(value);
     } else {
+      multilineController!.updateCurrentSelection(
+          multilineController!.currentSelection, value.selection.start);
       value = multilineController!.clearCarets(value);
     }
   }
@@ -222,9 +224,6 @@ class CodeController extends TextEditingController {
 
   @override
   set value(TextEditingValue newValue) {
-    multilineController!.updateCurrentSelection(
-        newValue.selection.start, value.selection.start);
-
     final loc = _insertedLoc(text, newValue.text);
     if (loc != null && !multilineController!.isMutli) {
       final char = newValue.text[loc];
@@ -240,6 +239,9 @@ class CodeController extends TextEditingController {
       }
     }
 
+    multilineController!.updateCurrentSelection(
+        newValue.selection.start, value.selection.start);
+        
     bool hasTextChanged = newValue.text != super.value.text;
     bool hasSelectionChanged = (newValue.selection != super.value.selection);
 

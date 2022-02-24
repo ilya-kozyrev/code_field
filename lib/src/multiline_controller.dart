@@ -97,10 +97,11 @@ class MultilineController {
   TextEditingValue insertCaret(TextEditingValue value) {
     final sel = value.selection;
     if (this.carets.contains(sel.start) ||
-        this.carets.contains(sel.start - 1)) {
+        this.carets.contains(sel.start - 1) ||
+        value.selection.start == currentSelection) {
       return value;
     }
-    
+
     if (value.text.length == 0) {
       currentSelection = 0;
     }
