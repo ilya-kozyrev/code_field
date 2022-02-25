@@ -100,7 +100,7 @@ class LineNumberController extends TextEditingController {
         children.add(TooltipTextSpan(
             message: errors[number - stringsNumber]!, number: el, style: style,
             width: width));
-      } 
+      }
       else {
         children.add(textSpan);
         if (k < list.length - 1) children.add(TextSpan(text: "\n"));
@@ -317,7 +317,7 @@ class CodeFieldState extends State<CodeField> {
     const ROOT_KEY = 'root';
     final defaultText = Colors.grey.shade200;
     final theme = widget.controller.theme;
-    
+
     TextStyle textStyle = widget.textStyle ?? TextStyle();
     final textColor = textStyle.color ?? theme?[ROOT_KEY]?.color ?? defaultText;
     textStyle = textStyle.copyWith(
@@ -348,7 +348,7 @@ class CodeFieldState extends State<CodeField> {
       maxLines: widget.maxLines,
       scrollController: _numberScroll,
       decoration: InputDecoration(
-        isDense: true,  
+        isDense: true,
         enabledBorder: InputBorder.none,
         disabledBorder: InputBorder.none,
         contentPadding: EdgeInsets.symmetric(vertical: 4),
@@ -374,7 +374,7 @@ class CodeFieldState extends State<CodeField> {
       maxLines: widget.maxLines,
       scrollController: _codeScroll,
       decoration: InputDecoration(
-        isDense: true,  
+        isDense: true,
         enabledBorder: InputBorder.none,
         disabledBorder: InputBorder.none,
         border: InputBorder.none,
@@ -408,6 +408,7 @@ class CodeFieldState extends State<CodeField> {
           numberCol,
           Expanded(
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
                 editingField,
                 widget.controller.popupController.isPopupShown
