@@ -30,15 +30,9 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
     reset = false;
   }
 
-  List<String?> languageList = <String>[
-    java,
-    go,
-    python,
-    scala,
-    dart
-  ];
+  List<String?> languageList = <String>[java, go, python, scala, dart];
 
-  List<String?> themeList  = <String>[
+  List<String?> themeList = <String>[
     "monokai-sublime",
     "a11y-dark",
     "an-old-hope",
@@ -78,31 +72,29 @@ class _CustomCodeBoxState extends State<CustomCodeBox> {
       setState(() => theme = val);
     });
     final resetButton = TextButton.icon(
-      icon: Icon(Icons.delete, color: Colors.white), 
+      icon: Icon(Icons.delete, color: Colors.white),
       label: Text('Reset', style: TextStyle(color: Colors.white)),
       onPressed: () {
         setState(() {
           reset = (!reset!);
         });
-      }, 
+      },
     );
 
-    final buttons = Container (
-      height: MediaQuery.of(context).size.height/13,
-      color: Colors.deepPurple[900],
-      child: Row(
-        children: [
-        Spacer(flex: 2),
-        Text('Code editor', style: TextStyle(fontSize: 28, color: Colors.white)),
-        Spacer(flex: 35),
-        codeDropdown,
-        Spacer(),
-        themeDropdown,
-        Spacer(),
-        resetButton
-        ]
-      )
-    );
+    final buttons = Container(
+        height: MediaQuery.of(context).size.height / 13,
+        color: Colors.deepPurple[900],
+        child: Row(children: [
+          Spacer(flex: 2),
+          Text('Code editor',
+              style: TextStyle(fontSize: 28, color: Colors.white)),
+          Spacer(flex: 35),
+          codeDropdown,
+          Spacer(),
+          themeDropdown,
+          Spacer(),
+          resetButton
+        ]));
     final codeField = InnerField(
       key: ValueKey("$language - $theme - $reset"),
       language: language!,
@@ -146,32 +138,26 @@ class _InnerFieldState extends State<InnerField> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Container(
-      color: _codeController!.theme!['root']!.backgroundColor,
-      height: MediaQuery.of(context).size.height / 13 * 12,
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            child: CodeField(
-              controller: _codeController!,
-              textStyle: const TextStyle(fontFamily: 'SourceCode'),
-            )
-          ),
+        color: _codeController!.theme!['root']!.backgroundColor,
+        height: MediaQuery.of(context).size.height / 13 * 12,
+        child: Stack(children: [
+          Container(
+              child: CodeField(
+            controller: _codeController!,
+            textStyle: const TextStyle(fontFamily: 'SourceCode'),
+          )),
           Align(
-            alignment: Alignment.topRight,
-            child: FloatingActionButton(
-              child: const Icon(Icons.format_align_left_outlined),
-              backgroundColor: Colors.indigo[800],
-              onPressed: (){
-                setState(() {
-                  _codeController!.text = autoRefactor( _codeController!.text, widget.language);
-                });
-              }
-            )
-          )
-        ]
-      )
-    );
+              alignment: Alignment.topRight,
+              child: FloatingActionButton(
+                  child: const Icon(Icons.format_align_left_outlined),
+                  backgroundColor: Colors.indigo[800],
+                  onPressed: () {
+                    setState(() {
+                      _codeController!.text =
+                          autoRefactor(_codeController!.text, widget.language);
+                    });
+                  }))
+        ]));
   }
 }
